@@ -186,6 +186,7 @@
             text-align: left;
             font-weight: 600;
             border-bottom: 1px solid #d0d7de;
+            white-space: nowrap;
         }
         
         .table td {
@@ -569,12 +570,12 @@
                 <div class="stat-label">Total Moodle</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="syncedUsers">0</div>
-                <div class="stat-label">Tersinkronisasi</div>
+                <div class="stat-number" id="totalRombel">0</div>
+                <div class="stat-label">Total Rombel</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="unsyncedUsers">0</div>
-                <div class="stat-label">Belum Sync</div>
+                <div class="stat-number" id="totalSesi">0</div>
+                <div class="stat-label">Total Sesi</div>
             </div>
         </div>
 
@@ -607,12 +608,13 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>NIS</th>
-                            <th>Nama</th>
-                            <th>Kelas</th>
-                            <th>Email</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
+                            <th width="50">No</th>
+                            <th>Username</th>
+                            <th>Nama Peserta</th>
+                            <th>Rombel</th>
+                            <th>Ruang</th>
+                            <th>Kel. Sesi</th>
+                            <th width="150">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="cbtadminTable">
@@ -638,12 +640,13 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <th width="50">No</th>
                             <th>Username</th>
-                            <th>Nama Lengkap</th>
-                            <th>Email</th>
-                            <th>Kursus</th>
+                            <th>Nama Peserta</th>
+                            <th>Rombel</th>
+                            <th>Ruang</th>
+                            <th>Kel. Sesi</th>
                             <th>Status</th>
-                            <th>Terakhir Login</th>
                         </tr>
                     </thead>
                     <tbody id="moodleTable">
@@ -706,28 +709,53 @@
                     <!-- Single Import Form -->
                     <div id="singleImportForm" style="display: block;">
                         <div class="form-group">
-                            <label for="nis">NIS *</label>
-                            <input type="text" id="nis" placeholder="Nomor Induk Siswa" required>
+                            <label for="username">Username *</label>
+                            <input type="text" id="username" placeholder="Username peserta" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="nama">Nama Lengkap *</label>
+                            <label for="nama">Nama Peserta *</label>
                             <input type="text" id="nama" placeholder="Nama lengkap peserta" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="kelas">Kelas *</label>
-                            <select id="kelas" required>
-                                <option value="">Pilih Kelas</option>
-                                <option value="10">Kelas 10</option>
-                                <option value="11">Kelas 11</option>
-                                <option value="12">Kelas 12</option>
+                            <label for="rombel">Rombel *</label>
+                            <select id="rombel" required>
+                                <option value="">Pilih Rombel</option>
+                                <option value="10A">10A</option>
+                                <option value="10B">10B</option>
+                                <option value="10C">10C</option>
+                                <option value="11A">11A</option>
+                                <option value="11B">11B</option>
+                                <option value="11C">11C</option>
+                                <option value="12A">12A</option>
+                                <option value="12B">12B</option>
+                                <option value="12C">12C</option>
                             </select>
                         </div>
                         
                         <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" placeholder="email@siswa.example">
+                            <label for="ruang">Ruang</label>
+                            <select id="ruang">
+                                <option value="">Pilih Ruang</option>
+                                <option value="LAB-01">LAB-01</option>
+                                <option value="LAB-02">LAB-02</option>
+                                <option value="LAB-03">LAB-03</option>
+                                <option value="R-101">R-101</option>
+                                <option value="R-102">R-102</option>
+                                <option value="R-103">R-103</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="kelSesi">Kel. Sesi</label>
+                            <select id="kelSesi">
+                                <option value="">Pilih Sesi</option>
+                                <option value="Sesi 1">Sesi 1</option>
+                                <option value="Sesi 2">Sesi 2</option>
+                                <option value="Sesi 3">Sesi 3</option>
+                                <option value="Sesi 4">Sesi 4</option>
+                            </select>
                         </div>
                     </div>
 
@@ -806,29 +834,57 @@
                 cbtAdminData = [
                     {
                         id: 1,
-                        nis: "2024001",
+                        no: 1,
+                        username: "ahmad_2024",
                         nama: "Ahmad Rizki",
-                        kelas: "10",
-                        email: "ahmad@siswa.sch.id",
+                        rombel: "10A",
+                        ruang: "LAB-01",
+                        kelSesi: "Sesi 1",
                         status: "active",
                         createdAt: new Date().toISOString()
                     },
                     {
                         id: 2,
-                        nis: "2024002",
+                        no: 2,
+                        username: "siti_2024",
                         nama: "Siti Nurhaliza",
-                        kelas: "10",
-                        email: "siti@siswa.sch.id",
+                        rombel: "10B",
+                        ruang: "LAB-02",
+                        kelSesi: "Sesi 2",
                         status: "active",
                         createdAt: new Date().toISOString()
                     },
                     {
                         id: 3,
-                        nis: "2024003",
+                        no: 3,
+                        username: "budi_2024",
                         nama: "Budi Santoso",
-                        kelas: "11",
-                        email: "budi@siswa.sch.id",
+                        rombel: "11A",
+                        ruang: "R-101",
+                        kelSesi: "Sesi 1",
+                        status: "active",
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 4,
+                        no: 4,
+                        username: "rina_2024",
+                        nama: "Rina Wijaya",
+                        rombel: "11B",
+                        ruang: "R-102",
+                        kelSesi: "Sesi 3",
                         status: "inactive",
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 5,
+                        no: 5,
+                        username: "doni_2024",
+                        nama: "Doni Pratama",
+                        rombel: "12A",
+                        ruang: "LAB-03",
+                        kelSesi: "Sesi 4",
+                        status: "active",
                         createdAt: new Date().toISOString()
                     }
                 ];
@@ -839,23 +895,36 @@
                 moodleData = [
                     {
                         id: 1,
-                        username: "ahmad_rizki",
+                        no: 1,
+                        username: "ahmad_2024",
                         nama: "Ahmad Rizki",
-                        email: "ahmad@siswa.sch.id",
-                        kursus: "Matematika Kelas 10",
+                        rombel: "10A",
+                        ruang: "LAB-01",
+                        kelSesi: "Sesi 1",
                         status: "enrolled",
-                        lastLogin: "2024-01-15 08:30",
-                        moodleId: "1001"
+                        lastLogin: "2024-01-15 08:30"
                     },
                     {
                         id: 2,
-                        username: "siti_nurhaliza",
+                        no: 2,
+                        username: "siti_2024",
                         nama: "Siti Nurhaliza",
-                        email: "siti@siswa.sch.id",
-                        kursus: "Bahasa Indonesia Kelas 10",
+                        rombel: "10B",
+                        ruang: "LAB-02",
+                        kelSesi: "Sesi 2",
                         status: "enrolled",
-                        lastLogin: "2024-01-14 14:20",
-                        moodleId: "1002"
+                        lastLogin: "2024-01-14 14:20"
+                    },
+                    {
+                        id: 3,
+                        no: 3,
+                        username: "budi_2024",
+                        nama: "Budi Santoso",
+                        rombel: "11A",
+                        ruang: "R-101",
+                        kelSesi: "Sesi 1",
+                        status: "pending",
+                        lastLogin: "2024-01-13 10:15"
                     }
                 ];
                 localStorage.setItem('moodleData', JSON.stringify(moodleData));
@@ -933,13 +1002,15 @@
                 });
 
                 // Validate required fields
-                if (row.nis && row.nama && row.kelas) {
+                if (row.username && row.nama && row.rombel) {
                     fileData.push({
                         id: Date.now() + i,
-                        nis: row.nis,
+                        no: fileData.length + 1,
+                        username: row.username,
                         nama: row.nama,
-                        kelas: row.kelas,
-                        email: row.email || '',
+                        rombel: row.rombel,
+                        ruang: row.ruang || '',
+                        kelSesi: row.kelsesi || row.sesi || '',
                         status: 'active',
                         createdAt: new Date().toISOString()
                     });
@@ -956,7 +1027,7 @@
 
         // Download CSV template
         function downloadTemplate() {
-            const template = `nis,nama,kelas,email\n2024001,Contoh Siswa,10,contoh@siswa.sch.id`;
+            const template = `username,nama,rombel,ruang,kelSesi\nahmad_2024,Ahmad Rizki,10A,LAB-01,Sesi 1`;
             const blob = new Blob([template], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -975,11 +1046,11 @@
                 return;
             }
 
-            const headers = ['NIS', 'Nama', 'Kelas', 'Email', 'Status'];
+            const headers = ['No', 'Username', 'Nama Peserta', 'Rombel', 'Ruang', 'Kel. Sesi', 'Status'];
             const csvContent = [
                 headers.join(','),
                 ...cbtAdminData.map(p => 
-                    [p.nis, p.nama, p.kelas, p.email || '', p.status].join(',')
+                    [p.no, p.username, p.nama, p.rombel, p.ruang, p.kelSesi, p.status].join(',')
                 )
             ].join('\n');
 
@@ -1003,11 +1074,11 @@
             // Validation
             if (currentStep === 1) {
                 if (importType === 'single') {
-                    const nis = document.getElementById('nis').value;
+                    const username = document.getElementById('username').value;
                     const nama = document.getElementById('nama').value;
-                    const kelas = document.getElementById('kelas').value;
+                    const rombel = document.getElementById('rombel').value;
                     
-                    if (!nis || !nama || !kelas) {
+                    if (!username || !nama || !rombel) {
                         alert('❌ Harap isi semua field yang wajib diisi');
                         return;
                     }
@@ -1015,10 +1086,12 @@
                     // Prepare single data
                     fileData = [{
                         id: Date.now(),
-                        nis: nis,
+                        no: cbtAdminData.length + 1,
+                        username: username,
                         nama: nama,
-                        kelas: kelas,
-                        email: document.getElementById('email').value,
+                        rombel: rombel,
+                        ruang: document.getElementById('ruang').value,
+                        kelSesi: document.getElementById('kelSesi').value,
                         status: 'active',
                         createdAt: new Date().toISOString()
                     }];
@@ -1078,19 +1151,23 @@
                     <table class="preview-table">
                         <thead>
                             <tr>
-                                <th>NIS</th>
-                                <th>Nama</th>
-                                <th>Kelas</th>
-                                <th>Email</th>
+                                <th>No</th>
+                                <th>Username</th>
+                                <th>Nama Peserta</th>
+                                <th>Rombel</th>
+                                <th>Ruang</th>
+                                <th>Kel. Sesi</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${fileData.slice(0, 10).map(p => `
                                 <tr>
-                                    <td>${p.nis}</td>
+                                    <td>${p.no}</td>
+                                    <td>${p.username}</td>
                                     <td>${p.nama}</td>
-                                    <td>${p.kelas}</td>
-                                    <td>${p.email || '-'}</td>
+                                    <td>${p.rombel}</td>
+                                    <td>${p.ruang || '-'}</td>
+                                    <td>${p.kelSesi || '-'}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -1118,6 +1195,9 @@
                     clearInterval(importInterval);
                     
                     // Actually import the data
+                    fileData.forEach((data, index) => {
+                        data.no = cbtAdminData.length + index + 1;
+                    });
                     cbtAdminData = [...cbtAdminData, ...fileData];
                     localStorage.setItem('cbtAdminData', JSON.stringify(cbtAdminData));
                     
@@ -1133,7 +1213,6 @@
             }, 200);
         }
 
-        // [Rest of the existing functions remain the same - loadCbtAdminTable, loadMoodleTable, updateStats, etc.]
         // Load data tables
         function loadCbtAdminTable() {
             const table = document.getElementById('cbtadminTable');
@@ -1141,7 +1220,7 @@
             if (cbtAdminData.length === 0) {
                 table.innerHTML = `
                     <tr>
-                        <td colspan="6" class="empty-state">
+                        <td colspan="7" class="empty-state">
                             <div class="empty-state-icon">👥</div>
                             <p>Belum ada data peserta CBTAdmin</p>
                             <button class="btn btn-primary btn-sm" onclick="showImportModal()">Tambah Peserta</button>
@@ -1153,15 +1232,12 @@
 
             table.innerHTML = cbtAdminData.map(peserta => `
                 <tr>
-                    <td>${peserta.nis}</td>
+                    <td>${peserta.no}</td>
+                    <td>${peserta.username}</td>
                     <td>${peserta.nama}</td>
-                    <td>Kelas ${peserta.kelas}</td>
-                    <td>${peserta.email || '-'}</td>
-                    <td>
-                        <span class="badge ${peserta.status === 'active' ? 'badge-success' : 'badge-error'}">
-                            ${peserta.status === 'active' ? 'Aktif' : 'Non-Aktif'}
-                        </span>
-                    </td>
+                    <td>${peserta.rombel}</td>
+                    <td>${peserta.ruang || '-'}</td>
+                    <td>${peserta.kelSesi || '-'}</td>
                     <td>
                         <div class="action-buttons">
                             <button class="action-btn" onclick="editPeserta(${peserta.id})">✏️</button>
@@ -1179,7 +1255,7 @@
             if (moodleData.length === 0) {
                 table.innerHTML = `
                     <tr>
-                        <td colspan="6" class="empty-state">
+                        <td colspan="7" class="empty-state">
                             <div class="empty-state-icon">🌐</div>
                             <p>Belum ada data dari Moodle</p>
                             <button class="btn btn-primary btn-sm" onclick="syncMoodle()">Sync dengan Moodle</button>
@@ -1191,16 +1267,17 @@
 
             table.innerHTML = moodleData.map(peserta => `
                 <tr>
+                    <td>${peserta.no}</td>
                     <td>${peserta.username}</td>
                     <td>${peserta.nama}</td>
-                    <td>${peserta.email}</td>
-                    <td>${peserta.kursus}</td>
+                    <td>${peserta.rombel}</td>
+                    <td>${peserta.ruang || '-'}</td>
+                    <td>${peserta.kelSesi || '-'}</td>
                     <td>
                         <span class="badge ${peserta.status === 'enrolled' ? 'badge-success' : 'badge-warning'}">
                             ${peserta.status === 'enrolled' ? 'Terdaftar' : 'Pending'}
                         </span>
                     </td>
-                    <td>${peserta.lastLogin}</td>
                 </tr>
             `).join('');
         }
@@ -1210,13 +1287,12 @@
             document.getElementById('totalCbtAdmin').textContent = cbtAdminData.length;
             document.getElementById('totalMoodle').textContent = moodleData.length;
             
-            // Calculate synced users (simple logic - same email exists in both)
-            const synced = cbtAdminData.filter(cbt => 
-                moodleData.some(moodle => moodle.email === cbt.email)
-            ).length;
+            // Calculate unique rombel and sesi
+            const uniqueRombel = [...new Set(cbtAdminData.map(p => p.rombel))].length;
+            const uniqueSesi = [...new Set(cbtAdminData.map(p => p.kelSesi).filter(s => s))].length;
             
-            document.getElementById('syncedUsers').textContent = synced;
-            document.getElementById('unsyncedUsers').textContent = cbtAdminData.length - synced;
+            document.getElementById('totalRombel').textContent = uniqueRombel;
+            document.getElementById('totalSesi').textContent = uniqueSesi;
         }
 
         // Tab functions
@@ -1251,7 +1327,7 @@
             if (filteredData.length === 0) {
                 table.innerHTML = `
                     <tr>
-                        <td colspan="${type === 'cbtadmin' ? 6 : 6}">
+                        <td colspan="${type === 'cbtadmin' ? 7 : 7}">
                             <div style="text-align: center; padding: 20px; color: #57606a;">
                                 Tidak ditemukan data yang sesuai
                             </div>
@@ -1300,6 +1376,10 @@
         function deletePeserta(id) {
             if (confirm('Apakah Anda yakin ingin menghapus peserta ini?')) {
                 cbtAdminData = cbtAdminData.filter(p => p.id !== id);
+                // Re-number the data
+                cbtAdminData.forEach((p, index) => {
+                    p.no = index + 1;
+                });
                 localStorage.setItem('cbtAdminData', JSON.stringify(cbtAdminData));
                 loadCbtAdminTable();
                 updateStats();
