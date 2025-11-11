@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Peserta - Admin Moodle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f6f8fa;
+            color: #24292f;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #d0d7de;
+            padding: 16px 0;
+            margin-bottom: 24px;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            color: #0969da;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 16px;
+            margin-top: 10px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #24292f;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            background: #f6f8fa;
+        }
+        
+        .nav-links a.active {
+            background: #0969da;
+            color: white;
+        }
+        
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: #2da44e;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2c974b;
+        }
+        
+        .btn-secondary {
+            background: #f6f8fa;
+            color: #24292f;
+            border: 1px solid #d0d7de;
+        }
+        
+        /* Submenu Tabs */
+        .submenu-tabs {
+            display: flex;
+            border-bottom: 1px solid #d0d7de;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        
+        .submenu-tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            background: none;
+            border: none;
+            color: #57606a;
+        }
+        
+        .submenu-tab.active {
+            border-bottom-color: #0969da;
+            color: #0969da;
+        }
+        
+        /* Content Sections */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Table Styles */
+        .table-container {
+            background: white;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            padding: 16px 20px;
+            background: #f6f8fa;
+            border-bottom: 1px solid #d0d7de;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .table-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .search-box {
+            padding: 8px 12px;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            width: 250px;
+            max-width: 100%;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            background: #f6f8fa;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid #d0d7de;
+        }
+        
+        .table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #d0d7de;
+        }
+        
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .table tr:hover {
+            background: #f6f8fa;
+        }
+        
+        /* Badge Styles */
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .badge-success {
+            background: #dafbe1;
+            color: #1a7f37;
+        }
+        
+        .badge-warning {
+            background: #fff8c5;
+            color: #9a6700;
+        }
+        
+        .badge-error {
+            background: #ffebe9;
+            color: #cf222e;
+        }
+        
+        .badge-info {
+            background: #ddf4ff;
+            color: #0969da;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: 1px solid #d0d7de;
+            border-radius: 4px;
+            background: white;
+            color: #24292f;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .action-btn:hover {
+            background: #f6f8fa;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        /* Sync Status */
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: #fff8c5;
+            border: 1px solid #d4a72c;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #57606a;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 6px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #d0d7de;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #57606a;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: white;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0969da;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #57606a;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="nav">
+                <div class="logo">🎯 Admin Ujian Moodle</div>
+                <div class="nav-links">
+                    <a href="home.html">Home</a>
+                    <a href="exams.html">Ujian</a>
+                    <a href="peserta.html" class="active">Peserta</a>
+                    <a href="#">Monitoring</a>
+                    <a href="#">Laporan</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">👥 Daftar Peserta</h1>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="showImportModal()">
+                    📥 Import Peserta
+                </button>
+                <button class="btn btn-secondary" onclick="syncMoodle()">
+                    🔄 Sync dengan Moodle
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalCbtAdmin">0</div>
+                <div class="stat-label">Total CBTAdmin</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalMoodle">0</div>
+                <div class="stat-label">Total Moodle</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="syncedUsers">0</div>
+                <div class="stat-label">Tersinkronisasi</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="unsyncedUsers">0</div>
+                <div class="stat-label">Belum Sync</div>
+            </div>
+        </div>
+
+        <!-- Submenu Tabs -->
+        <div class="submenu-tabs">
+            <button class="submenu-tab active" onclick="showSubTab('cbtadmin')">
+                🏷️ Data CBTAdmin
+            </button>
+            <button class="submenu-tab" onclick="showSubTab('moodle')">
+                🌐 Data Moodle
+            </button>
+        </div>
+
+        <!-- CBTAdmin Tab Content -->
+        <div id="cbtadmin-tab" class="tab-content active">
+            <div class="sync-status">
+                <span>🔄</span>
+                <span><strong>Data CBTAdmin:</strong> Sistem lokal untuk manajemen peserta ujian</span>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3 class="table-title">Daftar Peserta CBTAdmin</h3>
+                    <input type="text" class="search-box" placeholder="Cari peserta..." onkeyup="searchPeserta('cbtadmin')">
+                </div>
+                
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>NIS</th>
+                            <th>Nama</th>
+                            <th>Kelas</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cbtadminTable">
+                        <!-- Data CBTAdmin akan di-load di sini -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Moodle Tab Content -->
+        <div id="moodle-tab" class="tab-content">
+            <div class="sync-status">
+                <span>🌐</span>
+                <span><strong>Data Moodle:</strong> Data peserta dari sistem Moodle terintegrasi</span>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3 class="table-title">Daftar Peserta Moodle</h3>
+                    <input type="text" class="search-box" placeholder="Cari peserta..." onkeyup="searchPeserta('moodle')">
+                </div>
+                
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Nama Lengkap</th>
+                            <th>Email</th>
+                            <th>Kursus</th>
+                            <th>Status</th>
+                            <th>Terakhir Login</th>
+                        </tr>
+                    </thead>
+                    <tbody id="moodleTable">
+                        <!-- Data Moodle akan di-load di sini -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div class="modal" id="importModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">📥 Import Peserta</h3>
+                <button class="close-modal" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="importForm">
+                    <div class="form-group">
+                        <label for="importType">Tipe Import</label>
+                        <select id="importType">
+                            <option value="single">Tambah Peserta Tunggal</option>
+                            <option value="csv">Import dari CSV</option>
+                            <option value="excel">Import dari Excel</option>
+                        </select>
+                    </div>
+                    
+                    <div id="singleImportForm">
+                        <div class="form-group">
+                            <label for="nis">NIS</label>
+                            <input type="text" id="nis" placeholder="Nomor Induk Siswa" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="nama">Nama Lengkap</label>
+                            <input type="text" id="nama" placeholder="Nama lengkap peserta" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="kelas">Kelas</label>
+                            <select id="kelas" required>
+                                <option value="">Pilih Kelas</option>
+                                <option value="10">Kelas 10</option>
+                                <option value="11">Kelas 11</option>
+                                <option value="12">Kelas 12</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" placeholder="email@siswa.example">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
+                        <button type="submit" class="btn btn-primary">Import Peserta</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let cbtAdminData = JSON.parse(localStorage.getItem('cbtAdminData')) || [];
+        let moodleData = JSON.parse(localStorage.getItem('moodleData')) || [];
+
+        // Initialize sample data if empty
+        function initializeSampleData() {
+            if (cbtAdminData.length === 0) {
+                cbtAdminData = [
+                    {
+                        id: 1,
+                        nis: "2024001",
+                        nama: "Ahmad Rizki",
+                        kelas: "10",
+                        email: "ahmad@siswa.sch.id",
+                        status: "active",
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        nis: "2024002",
+                        nama: "Siti Nurhaliza",
+                        kelas: "10",
+                        email: "siti@siswa.sch.id",
+                        status: "active",
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 3,
+                        nis: "2024003",
+                        nama: "Budi Santoso",
+                        kelas: "11",
+                        email: "budi@siswa.sch.id",
+                        status: "inactive",
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('cbtAdminData', JSON.stringify(cbtAdminData));
+            }
+
+            if (moodleData.length === 0) {
+                moodleData = [
+                    {
+                        id: 1,
+                        username: "ahmad_rizki",
+                        nama: "Ahmad Rizki",
+                        email: "ahmad@siswa.sch.id",
+                        kursus: "Matematika Kelas 10",
+                        status: "enrolled",
+                        lastLogin: "2024-01-15 08:30",
+                        moodleId: "1001"
+                    },
+                    {
+                        id: 2,
+                        username: "siti_nurhaliza",
+                        nama: "Siti Nurhaliza",
+                        email: "siti@siswa.sch.id",
+                        kursus: "Bahasa Indonesia Kelas 10",
+                        status: "enrolled",
+                        lastLogin: "2024-01-14 14:20",
+                        moodleId: "1002"
+                    }
+                ];
+                localStorage.setItem('moodleData', JSON.stringify(moodleData));
+            }
+        }
+
+        // Load data tables
+        function loadCbtAdminTable() {
+            const table = document.getElementById('cbtadminTable');
+            
+            if (cbtAdminData.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <div class="empty-state-icon">👥</div>
+                            <p>Belum ada data peserta CBTAdmin</p>
+                            <button class="btn btn-primary btn-sm" onclick="showImportModal()">Tambah Peserta</button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            table.innerHTML = cbtAdminData.map(peserta => `
+                <tr>
+                    <td>${peserta.nis}</td>
+                    <td>${peserta.nama}</td>
+                    <td>Kelas ${peserta.kelas}</td>
+                    <td>${peserta.email || '-'}</td>
+                    <td>
+                        <span class="badge ${peserta.status === 'active' ? 'badge-success' : 'badge-error'}">
+                            ${peserta.status === 'active' ? 'Aktif' : 'Non-Aktif'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="editPeserta(${peserta.id})">✏️</button>
+                            <button class="action-btn" onclick="deletePeserta(${peserta.id})">🗑️</button>
+                            <button class="action-btn" onclick="syncToMoodle(${peserta.id})">🌐</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function loadMoodleTable() {
+            const table = document.getElementById('moodleTable');
+            
+            if (moodleData.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <div class="empty-state-icon">🌐</div>
+                            <p>Belum ada data dari Moodle</p>
+                            <button class="btn btn-primary btn-sm" onclick="syncMoodle()">Sync dengan Moodle</button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            table.innerHTML = moodleData.map(peserta => `
+                <tr>
+                    <td>${peserta.username}</td>
+                    <td>${peserta.nama}</td>
+                    <td>${peserta.email}</td>
+                    <td>${peserta.kursus}</td>
+                    <td>
+                        <span class="badge ${peserta.status === 'enrolled' ? 'badge-success' : 'badge-warning'}">
+                            ${peserta.status === 'enrolled' ? 'Terdaftar' : 'Pending'}
+                        </span>
+                    </td>
+                    <td>${peserta.lastLogin}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Update stats
+        function updateStats() {
+            document.getElementById('totalCbtAdmin').textContent = cbtAdminData.length;
+            document.getElementById('totalMoodle').textContent = moodleData.length;
+            
+            // Calculate synced users (simple logic - same email exists in both)
+            const synced = cbtAdminData.filter(cbt => 
+                moodleData.some(moodle => moodle.email === cbt.email)
+            ).length;
+            
+            document.getElementById('syncedUsers').textContent = synced;
+            document.getElementById('unsyncedUsers').textContent = cbtAdminData.length - synced;
+        }
+
+        // Tab functions
+        function showSubTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.submenu-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        // Search function
+        function searchPeserta(type) {
+            const searchTerm = event.target.value.toLowerCase();
+            const tableId = type === 'cbtadmin' ? 'cbtadminTable' : 'moodleTable';
+            const data = type === 'cbtadmin' ? cbtAdminData : moodleData;
+            
+            const filteredData = data.filter(peserta => 
+                Object.values(peserta).some(value => 
+                    String(value).toLowerCase().includes(searchTerm)
+                )
+            );
+            
+            const table = document.getElementById(tableId);
+            
+            if (filteredData.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="${type === 'cbtadmin' ? 6 : 6}">
+                            <div style="text-align: center; padding: 20px; color: #57606a;">
+                                Tidak ditemukan data yang sesuai
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Reload table with filtered data
+            if (type === 'cbtadmin') {
+                const tempData = cbtAdminData;
+                cbtAdminData = filteredData;
+                loadCbtAdminTable();
+                cbtAdminData = tempData;
+            } else {
+                const tempData = moodleData;
+                moodleData = filteredData;
+                loadMoodleTable();
+                moodleData = tempData;
+            }
+        }
+
+        // Modal functions
+        function showImportModal() {
+            document.getElementById('importModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('importModal').style.display = 'none';
+            document.getElementById('importForm').reset();
+        }
+
+        // Action functions
+        function editPeserta(id) {
+            const peserta = cbtAdminData.find(p => p.id === id);
+            alert(`Edit peserta: ${peserta.nama}\nFitur edit akan datang!`);
+        }
+
+        function deletePeserta(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus peserta ini?')) {
+                cbtAdminData = cbtAdminData.filter(p => p.id !== id);
+                localStorage.setItem('cbtAdminData', JSON.stringify(cbtAdminData));
+                loadCbtAdminTable();
+                updateStats();
+                alert('✅ Peserta berhasil dihapus!');
+            }
+        }
+
+        function syncToMoodle(id) {
+            const peserta = cbtAdminData.find(p => p.id === id);
+            alert(`Sync peserta ${peserta.nama} ke Moodle...\nFitur sync akan datang!`);
+        }
+
+        function syncMoodle() {
+            alert('🔄 Melakukan sinkronisasi dengan Moodle...\nFitur sync akan datang!');
+            // Here would be API call to Moodle
+        }
+
+        // Form submission
+        document.getElementById('importForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newPeserta = {
+                id: Date.now(),
+                nis: document.getElementById('nis').value,
+                nama: document.getElementById('nama').value,
+                kelas: document.getElementById('kelas').value,
+                email: document.getElementById('email').value,
+                status: 'active',
+                createdAt: new Date().toISOString()
+            };
+            
+            cbtAdminData.push(newPeserta);
+            localStorage.setItem('cbtAdminData', JSON.stringify(cbtAdminData));
+            
+            closeModal();
+            loadCbtAdminTable();
+            updateStats();
+            alert('✅ Peserta berhasil ditambahkan!');
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSampleData();
+            loadCbtAdminTable();
+            loadMoodleTable();
+            updateStats();
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('importModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
