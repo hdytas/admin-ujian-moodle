@@ -298,7 +298,7 @@
             background: white;
             border-radius: 6px;
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
             max-height: 90vh;
             overflow-y: auto;
         }
@@ -339,7 +339,8 @@
         }
         
         .form-group input,
-        .form-group select {
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 8px 12px;
             border: 1px solid #d0d7de;
@@ -379,6 +380,152 @@
         .stat-label {
             font-size: 14px;
             color: #57606a;
+        }
+        
+        /* File Upload */
+        .file-upload {
+            border: 2px dashed #d0d7de;
+            border-radius: 6px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        
+        .file-upload:hover {
+            border-color: #0969da;
+        }
+        
+        .file-upload.dragover {
+            border-color: #2da44e;
+            background: #f6f8fa;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-info {
+            margin-top: 16px;
+            padding: 12px;
+            background: #f6f8fa;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .file-preview {
+            margin-top: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .preview-table {
+            width: 100%;
+            font-size: 12px;
+            border-collapse: collapse;
+        }
+        
+        .preview-table th,
+        .preview-table td {
+            padding: 8px;
+            border: 1px solid #d0d7de;
+            text-align: left;
+        }
+        
+        .preview-table th {
+            background: #f6f8fa;
+            font-weight: 600;
+        }
+        
+        /* Import Steps */
+        .import-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        
+        .import-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #d0d7de;
+            z-index: 1;
+        }
+        
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #eaeef2;
+            color: #57606a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-weight: 600;
+        }
+        
+        .step.active .step-number {
+            background: #0969da;
+            color: white;
+        }
+        
+        .step.completed .step-number {
+            background: #2da44e;
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            color: #57606a;
+        }
+        
+        .step.active .step-label {
+            color: #0969da;
+            font-weight: 600;
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            height: 6px;
+            background: #eaeef2;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #2da44e;
+            transition: width 0.3s;
+        }
+        
+        /* Template Download */
+        .template-download {
+            background: #f6f8fa;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .template-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
     </style>
 </head>
@@ -451,7 +598,10 @@
             <div class="table-container">
                 <div class="table-header">
                     <h3 class="table-title">Daftar Peserta CBTAdmin</h3>
-                    <input type="text" class="search-box" placeholder="Cari peserta..." onkeyup="searchPeserta('cbtadmin')">
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <input type="text" class="search-box" placeholder="Cari peserta..." onkeyup="searchPeserta('cbtadmin')">
+                        <button class="btn btn-secondary btn-sm" onclick="exportToCSV()">📤 Export CSV</button>
+                    </div>
                 </div>
                 
                 <table class="table">
@@ -512,29 +662,61 @@
                 <button class="close-modal" onclick="closeModal()">×</button>
             </div>
             <div class="modal-body">
-                <form id="importForm">
+                <!-- Import Steps -->
+                <div class="import-steps">
+                    <div class="step active" id="step1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Pilih File</div>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Preview Data</div>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Konfirmasi</div>
+                    </div>
+                </div>
+
+                <!-- Step 1: File Selection -->
+                <div id="step1-content">
+                    <div class="template-download">
+                        <div class="template-info">
+                            <div>
+                                <strong>📋 Download Template</strong>
+                                <p style="margin: 4px 0 0 0; font-size: 12px; color: #57606a;">
+                                    Gunakan template ini untuk format yang benar
+                                </p>
+                            </div>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="downloadTemplate()">
+                                📥 Download Template CSV
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="importType">Tipe Import</label>
-                        <select id="importType">
+                        <select id="importType" onchange="toggleImportType()">
                             <option value="single">Tambah Peserta Tunggal</option>
                             <option value="csv">Import dari CSV</option>
                             <option value="excel">Import dari Excel</option>
                         </select>
                     </div>
-                    
-                    <div id="singleImportForm">
+
+                    <!-- Single Import Form -->
+                    <div id="singleImportForm" style="display: block;">
                         <div class="form-group">
-                            <label for="nis">NIS</label>
+                            <label for="nis">NIS *</label>
                             <input type="text" id="nis" placeholder="Nomor Induk Siswa" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="nama">Nama Lengkap</label>
+                            <label for="nama">Nama Lengkap *</label>
                             <input type="text" id="nama" placeholder="Nama lengkap peserta" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="kelas">Kelas</label>
+                            <label for="kelas">Kelas *</label>
                             <select id="kelas" required>
                                 <option value="">Pilih Kelas</option>
                                 <option value="10">Kelas 10</option>
@@ -548,12 +730,64 @@
                             <input type="email" id="email" placeholder="email@siswa.example">
                         </div>
                     </div>
-                    
+
+                    <!-- File Import Form -->
+                    <div id="fileImportForm" style="display: none;">
+                        <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                            <div>📁</div>
+                            <div style="margin-top: 8px;">
+                                <strong>Pilih file CSV atau Excel</strong>
+                                <p style="margin: 4px 0 0 0; font-size: 12px; color: #57606a;">
+                                    Drag & drop file atau klik untuk memilih
+                                </p>
+                            </div>
+                            <input type="file" id="fileInput" class="file-input" accept=".csv,.xlsx,.xls" onchange="handleFileSelect(event)">
+                        </div>
+                        <div id="fileInfo" class="file-info" style="display: none;">
+                            <!-- File info will be shown here -->
+                        </div>
+                    </div>
+
                     <div class="form-actions">
                         <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
-                        <button type="submit" class="btn btn-primary">Import Peserta</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Lanjut</button>
                     </div>
-                </form>
+                </div>
+
+                <!-- Step 2: Data Preview -->
+                <div id="step2-content" style="display: none;">
+                    <div id="previewContent">
+                        <!-- Preview will be loaded here -->
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">Kembali</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Lanjut</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Confirmation -->
+                <div id="step3-content" style="display: none;">
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+                        <h3 style="margin-bottom: 8px;">Siap untuk Import</h3>
+                        <p style="color: #57606a; margin-bottom: 24px;">
+                            <span id="importSummary">0 peserta</span> akan ditambahkan ke sistem.
+                        </p>
+                        
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="importProgress" style="width: 0%"></div>
+                        </div>
+                        <div id="importStatus" style="font-size: 14px; color: #57606a; margin-top: 8px;">
+                            Menunggu konfirmasi...
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep()">Kembali</button>
+                        <button type="button" class="btn btn-primary" onclick="confirmImport()">Import Data</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -562,6 +796,9 @@
         // Data storage
         let cbtAdminData = JSON.parse(localStorage.getItem('cbtAdminData')) || [];
         let moodleData = JSON.parse(localStorage.getItem('moodleData')) || [];
+        let currentStep = 1;
+        let selectedFile = null;
+        let fileData = [];
 
         // Initialize sample data if empty
         function initializeSampleData() {
@@ -625,6 +862,278 @@
             }
         }
 
+        // Toggle between single and file import
+        function toggleImportType() {
+            const importType = document.getElementById('importType').value;
+            const singleForm = document.getElementById('singleImportForm');
+            const fileForm = document.getElementById('fileImportForm');
+            
+            if (importType === 'single') {
+                singleForm.style.display = 'block';
+                fileForm.style.display = 'none';
+            } else {
+                singleForm.style.display = 'none';
+                fileForm.style.display = 'block';
+            }
+        }
+
+        // Handle file selection
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            selectedFile = file;
+            
+            // Show file info
+            const fileInfo = document.getElementById('fileInfo');
+            fileInfo.innerHTML = `
+                <strong>📄 ${file.name}</strong>
+                <div style="margin-top: 4px; font-size: 12px;">
+                    Size: ${(file.size / 1024).toFixed(2)} KB | 
+                    Type: ${file.type || 'Unknown'}
+                </div>
+            `;
+            fileInfo.style.display = 'block';
+
+            // Read file content
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    if (file.name.endsWith('.csv')) {
+                        parseCSV(content);
+                    } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+                        alert('📊 File Excel terdeteksi. Untuk demo, gunakan file CSV.\nFitur Excel akan datang!');
+                        parseCSV(content); // Fallback untuk demo
+                    }
+                } catch (error) {
+                    alert('❌ Error membaca file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Parse CSV content
+        function parseCSV(content) {
+            const lines = content.split('\n').filter(line => line.trim() !== '');
+            if (lines.length < 2) {
+                alert('❌ File CSV harus memiliki header dan minimal 1 data');
+                return;
+            }
+
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            fileData = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',').map(v => v.trim());
+                const row = {};
+                
+                headers.forEach((header, index) => {
+                    row[header] = values[index] || '';
+                });
+
+                // Validate required fields
+                if (row.nis && row.nama && row.kelas) {
+                    fileData.push({
+                        id: Date.now() + i,
+                        nis: row.nis,
+                        nama: row.nama,
+                        kelas: row.kelas,
+                        email: row.email || '',
+                        status: 'active',
+                        createdAt: new Date().toISOString()
+                    });
+                }
+            }
+
+            if (fileData.length === 0) {
+                alert('❌ Tidak ada data valid yang ditemukan dalam file');
+                return;
+            }
+
+            alert(`✅ ${fileData.length} data peserta berhasil dibaca dari file`);
+        }
+
+        // Download CSV template
+        function downloadTemplate() {
+            const template = `nis,nama,kelas,email\n2024001,Contoh Siswa,10,contoh@siswa.sch.id`;
+            const blob = new Blob([template], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'template_peserta.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            if (cbtAdminData.length === 0) {
+                alert('❌ Tidak ada data untuk di-export');
+                return;
+            }
+
+            const headers = ['NIS', 'Nama', 'Kelas', 'Email', 'Status'];
+            const csvContent = [
+                headers.join(','),
+                ...cbtAdminData.map(p => 
+                    [p.nis, p.nama, p.kelas, p.email || '', p.status].join(',')
+                )
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `data_peserta_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            alert(`✅ ${cbtAdminData.length} data berhasil di-export`);
+        }
+
+        // Import steps navigation
+        function nextStep() {
+            const importType = document.getElementById('importType').value;
+            
+            // Validation
+            if (currentStep === 1) {
+                if (importType === 'single') {
+                    const nis = document.getElementById('nis').value;
+                    const nama = document.getElementById('nama').value;
+                    const kelas = document.getElementById('kelas').value;
+                    
+                    if (!nis || !nama || !kelas) {
+                        alert('❌ Harap isi semua field yang wajib diisi');
+                        return;
+                    }
+                    
+                    // Prepare single data
+                    fileData = [{
+                        id: Date.now(),
+                        nis: nis,
+                        nama: nama,
+                        kelas: kelas,
+                        email: document.getElementById('email').value,
+                        status: 'active',
+                        createdAt: new Date().toISOString()
+                    }];
+                } else {
+                    if (!selectedFile || fileData.length === 0) {
+                        alert('❌ Harap pilih file yang valid');
+                        return;
+                    }
+                }
+                
+                showPreview();
+            }
+            
+            currentStep++;
+            updateSteps();
+        }
+
+        function prevStep() {
+            currentStep--;
+            updateSteps();
+        }
+
+        function updateSteps() {
+            // Update step indicators
+            for (let i = 1; i <= 3; i++) {
+                const step = document.getElementById(`step${i}`);
+                if (i < currentStep) {
+                    step.className = 'step completed';
+                } else if (i === currentStep) {
+                    step.className = 'step active';
+                } else {
+                    step.className = 'step';
+                }
+            }
+            
+            // Show/hide content
+            document.getElementById('step1-content').style.display = currentStep === 1 ? 'block' : 'none';
+            document.getElementById('step2-content').style.display = currentStep === 2 ? 'block' : 'none';
+            document.getElementById('step3-content').style.display = currentStep === 3 ? 'block' : 'none';
+            
+            if (currentStep === 3) {
+                document.getElementById('importSummary').textContent = `${fileData.length} peserta`;
+            }
+        }
+
+        function showPreview() {
+            const previewContent = document.getElementById('previewContent');
+            
+            if (fileData.length === 0) {
+                previewContent.innerHTML = '<p>Tidak ada data untuk dipreview</p>';
+                return;
+            }
+            
+            previewContent.innerHTML = `
+                <h4>Preview Data (${fileData.length} peserta)</h4>
+                <div class="file-preview">
+                    <table class="preview-table">
+                        <thead>
+                            <tr>
+                                <th>NIS</th>
+                                <th>Nama</th>
+                                <th>Kelas</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${fileData.slice(0, 10).map(p => `
+                                <tr>
+                                    <td>${p.nis}</td>
+                                    <td>${p.nama}</td>
+                                    <td>${p.kelas}</td>
+                                    <td>${p.email || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    ${fileData.length > 10 ? `<p style="text-align: center; margin-top: 8px; color: #57606a;">... dan ${fileData.length - 10} data lainnya</p>` : ''}
+                </div>
+            `;
+        }
+
+        function confirmImport() {
+            const progressBar = document.getElementById('importProgress');
+            const statusText = document.getElementById('importStatus');
+            
+            let imported = 0;
+            const total = fileData.length;
+            
+            // Simulate import process
+            const importInterval = setInterval(() => {
+                imported++;
+                const progress = (imported / total) * 100;
+                progressBar.style.width = `${progress}%`;
+                statusText.textContent = `Mengimpor ${imported} dari ${total} peserta...`;
+                
+                if (imported === total) {
+                    clearInterval(importInterval);
+                    
+                    // Actually import the data
+                    cbtAdminData = [...cbtAdminData, ...fileData];
+                    localStorage.setItem('cbtAdminData', JSON.stringify(cbtAdminData));
+                    
+                    statusText.textContent = `✅ Berhasil mengimpor ${total} peserta!`;
+                    statusText.style.color = '#1a7f37';
+                    
+                    setTimeout(() => {
+                        closeModal();
+                        loadCbtAdminTable();
+                        updateStats();
+                    }, 1000);
+                }
+            }, 200);
+        }
+
+        // [Rest of the existing functions remain the same - loadCbtAdminTable, loadMoodleTable, updateStats, etc.]
         // Load data tables
         function loadCbtAdminTable() {
             const table = document.getElementById('cbtadminTable');
@@ -769,6 +1278,12 @@
         // Modal functions
         function showImportModal() {
             document.getElementById('importModal').style.display = 'flex';
+            currentStep = 1;
+            updateSteps();
+            document.getElementById('importForm').reset();
+            document.getElementById('fileInfo').style.display = 'none';
+            selectedFile = null;
+            fileData = [];
         }
 
         function closeModal() {
@@ -801,29 +1316,6 @@
             alert('🔄 Melakukan sinkronisasi dengan Moodle...\nFitur sync akan datang!');
             // Here would be API call to Moodle
         }
-
-        // Form submission
-        document.getElementById('importForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const newPeserta = {
-                id: Date.now(),
-                nis: document.getElementById('nis').value,
-                nama: document.getElementById('nama').value,
-                kelas: document.getElementById('kelas').value,
-                email: document.getElementById('email').value,
-                status: 'active',
-                createdAt: new Date().toISOString()
-            };
-            
-            cbtAdminData.push(newPeserta);
-            localStorage.setItem('cbtAdminData', JSON.stringify(cbtAdminData));
-            
-            closeModal();
-            loadCbtAdminTable();
-            updateStats();
-            alert('✅ Peserta berhasil ditambahkan!');
-        });
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
