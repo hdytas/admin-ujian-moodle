@@ -59,13 +59,13 @@
   .form-row{
     display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;
   }
-  select, input{
+  select{
     padding:10px;
     border:1px solid #d0d7de;
     border-radius:6px;
     font-size:15px;
   }
-  select:focus, input:focus{
+  select:focus{
     outline:none;
     border-color:#3498db;
     box-shadow:0 0 0 2px rgba(52,152,219,0.2);
@@ -79,21 +79,52 @@
   }
   button:hover{background:#2d85c5}
 
-  .token-row{
-    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-  }
-  .token-box{
-    flex:1;
-    padding:10px;
-    background:#f0f6ff;
-    border:1px solid #d0d7de;
-    border-radius:6px;
-    font-size:18px;
-    text-align:center;
-    font-weight:600;
-    letter-spacing:3px;
+  /* Layout dua kolom */
+  .row{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:20px;
   }
 
+  table{
+    width:100%;
+    border-collapse:collapse;
+    border:1px solid #d0d7de;
+    border-radius:8px;
+    overflow:hidden;
+    background:#fff;
+  }
+  th,td{padding:10px;border-bottom:1px solid #e1e4e8;text-align:left;font-size:14px}
+  th{background:#f6f8fa;font-weight:600}
+  tr:hover{background:#f0f6ff}
+
+  /* Token box */
+  .token-box{
+    background:#f0f6ff;
+    border:1px solid #d0d7de;
+    border-radius:8px;
+    padding:20px;
+    text-align:center;
+    font-size:24px;
+    font-weight:600;
+    letter-spacing:4px;
+    margin-bottom:15px;
+  }
+
+  .option-btn{
+    background:#6a737d;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    padding:8px 14px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .option-btn:hover{background:#555}
+
+  @media(max-width:900px){
+    .row{grid-template-columns:1fr}
+  }
   @media(max-width:768px){
     .main{margin-left:0}
     .sidebar{transform:translateX(-100%)}
@@ -137,6 +168,7 @@
       <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
       <strong>Status Tes</strong>
     </div>
+    <button class="option-btn" onclick="resetDefault()">⚙️ Option</button>
   </div>
 
   <div class="card">
@@ -150,9 +182,24 @@
       <button onclick="pilihMapel()">Pilih Mapel</button>
     </div>
 
-    <div class="token-row">
-      <div class="token-box" id="tokenDisplay">TOKEN123</div>
-      <button onclick="releaseToken()">Release Token</button>
+    <div class="row">
+      <!-- Kolom kiri: tabel mapel -->
+      <div>
+        <table>
+          <thead>
+            <tr><th>No</th><th>Mata Pelajaran</th><th>Status</th></tr>
+          </thead>
+          <tbody id="dataMapel">
+            <!-- diisi lewat JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Kolom kanan: token -->
+      <div>
+        <div class="token-box" id="tokenDisplay">TOKEN123</div>
+        <button style="width:100%" onclick="releaseToken()">Release Token</button>
+      </div>
     </div>
   </div>
 </div>
@@ -170,40 +217,64 @@ window.addEventListener("load", ()=>{
     document.body.style.display="block";
     setTimeout(()=>document.body.style.opacity="1",100);
     localStorage.setItem("sessionExpire", Date.now()+SESSION_TIMEOUT);
+    tampilkanMapel();
   } else {
     document.getElementById("loader").innerHTML="⏳ Sesi login berakhir...<br>Mengarahkan ke halaman login.";
     setTimeout(()=>window.location.href="login.html",1000);
   }
 });
 
-// 🔒 Logout
+// Logout
 function logout(){
   localStorage.removeItem("isLoggedIn");
   localStorage.removeItem("sessionExpire");
   window.location.href="login.html";
 }
 
-// 📱 Sidebar toggle
+// Sidebar toggle
 const sidebar=document.getElementById('sidebar');
 function toggleSidebar(){sidebar.classList.toggle('show');}
 window.addEventListener('resize',()=>{if(window.innerWidth>768){sidebar.classList.remove('show')}});
 
-// 🧩 Menu aktif
+// Menu aktif
 const currentPage=window.location.pathname.split('/').pop();
 document.querySelectorAll('.menu-link').forEach(link=>{
   if(link.getAttribute('href')===currentPage){link.classList.add('active');}
 });
 
-// 🔐 Simulasi fungsi
-function pilihMapel(){
-  alert("Fitur pilih mapel akan menampilkan daftar mata pelajaran dari tes yang dipilih.");
+// 🔢 Data mapel simulasi
+function tampilkanMapel(){
+  const mapel=[
+    {nama:"Matematika", status:"Siap"},
+    {nama:"Bahasa Indonesia", status:"Berjalan"},
+    {nama:"IPA", status:"Menunggu"},
+    {nama:"IPS", status:"Selesai"}
+  ];
+  const tbody=document.getElementById("dataMapel");
+  tbody.innerHTML=mapel.map((m,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td>${m.nama}</td>
+      <td>${m.status}</td>
+    </tr>`).join("");
 }
 
+// Tombol "Pilih Mapel"
+function pilihMapel(){
+  alert("Menampilkan daftar mapel dari tes yang dipilih.");
+}
+
+// Tombol "Release Token"
 function releaseToken(){
-  const tokenEl = document.getElementById("tokenDisplay");
-  const newToken = Math.random().toString(36).substr(2,6).toUpperCase();
-  tokenEl.textContent = newToken;
-  alert("Token baru telah direlease: " + newToken);
+  const tokenEl=document.getElementById("tokenDisplay");
+  const newToken=Math.random().toString(36).substr(2,6).toUpperCase();
+  tokenEl.textContent=newToken;
+  alert("Token baru telah direlease: "+newToken);
+}
+
+// Tombol "Option → Reset Default"
+function resetDefault(){
+  alert("Semua pengaturan Status Tes telah dikembalikan ke default.");
 }
 </script>
 </body>
