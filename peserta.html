@@ -9,17 +9,15 @@
   body{
     font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     background:#f6f8fa;color:#24292f;
-    display:none; /* disembunyikan dulu sampai login dicek */
-    min-height:100vh;
-    opacity:0;
-    transition:opacity .3s ease;
+    display:none; /* disembunyikan sampai login diverifikasi */
+    min-height:100vh;opacity:0;transition:opacity .3s ease;
   }
 
   /* SIDEBAR */
   .sidebar{
     position:fixed;left:0;top:0;height:100%;width:240px;
     background:#2c3e50;color:#fff;overflow-y:auto;
-    transform:translateX(0);transition:transform .3s ease;
+    transition:transform .3s ease;
     z-index:1000;display:flex;flex-direction:column;justify-content:space-between;
   }
   .sidebar.hidden{transform:translateX(-100%)}
@@ -45,11 +43,7 @@
   .logout-btn:hover{background:#c0392b;color:#fff}
 
   /* OVERLAY */
-  .overlay{
-    display:none;
-    position:fixed;top:0;left:0;width:100%;height:100%;
-    background:rgba(0,0,0,.4);z-index:999;
-  }
+  .overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);z-index:999;}
   .overlay.show{display:block;}
 
   /* MAIN */
@@ -60,14 +54,11 @@
     position:sticky;top:0;z-index:10;
   }
   .menu-toggle{display:none;font-size:22px;background:none;border:none;color:#24292f;cursor:pointer}
-
   .content{flex:1;padding:16px;width:100%;max-width:1200px;margin:0 auto}
   .page-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px}
   .btn{border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:6px;font-size:14px}
   .btn-primary{background:#2da44e;color:#fff}
   .btn-secondary{background:#f6f8fa;border:1px solid #d0d7de;color:#24292f}
-
-  /* TABLE */
   .table-container{background:#fff;border:1px solid #d0d7de;border-radius:6px;overflow:hidden}
   .table-header{background:#f6f8fa;padding:10px 14px;border-bottom:1px solid #d0d7de;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
   .search-box{padding:8px 10px;border:1px solid #d0d7de;border-radius:6px;width:220px;max-width:100%}
@@ -79,31 +70,19 @@
   .badge-success{background:#dafbe1;color:#1a7f37}
   .badge-warning{background:#fff8c5;color:#9a6700}
 
-  /* RESPONSIVE */
   @media (max-width:768px){
     body{flex-direction:column}
     .main{margin-left:0}
     .sidebar{transform:translateX(-100%)}
     .sidebar.show{transform:translateX(0)}
     .menu-toggle{display:block}
-    .page-header{flex-direction:column;align-items:stretch}
-    .btn{width:100%;justify-content:center}
-    table{font-size:13px;min-width:400px}
-  }
-  @media (max-width:480px){
-    .content{padding:10px}
-    .table-header{flex-direction:column;align-items:stretch}
-    .search-box{width:100%}
-    .btn{font-size:13px;padding:8px 10px}
-    th,td{padding:6px 8px}
   }
 </style>
 </head>
 <body>
-
-<!-- Loader (tampil sebelum login diverifikasi) -->
+<!-- Loader -->
 <div id="loader" style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;">
-  <div>🔄 Memeriksa sesi login...</div>
+  🔄 Memeriksa sesi login...
 </div>
 
 <!-- Sidebar -->
@@ -139,7 +118,6 @@
       <strong>Daftar Peserta</strong>
     </div>
   </div>
-
   <div class="content">
     <div class="page-header">
       <h2>👥 Daftar Peserta</h2>
@@ -148,7 +126,6 @@
         <button class="btn btn-secondary">🔄 Sync</button>
       </div>
     </div>
-
     <div class="table-container">
       <div class="table-header">
         <h3>Daftar Peserta CBTAdmin</h3>
@@ -168,39 +145,37 @@
 </div>
 
 <script>
-const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 menit
+const SESSION_TIMEOUT = 15 * 60 * 1000;
 
 function logout(){
   localStorage.removeItem("isLoggedIn");
   localStorage.removeItem("sessionExpire");
-  location.href="login.html";
+  window.location.href="login.html";
 }
 function confirmLogout(){
-  if(confirm("Yakin ingin keluar dari akun admin?")){
-    logout();
-  }
+  if(confirm("Yakin ingin keluar dari akun admin?")) logout();
 }
 function resetSessionTimer(){
-  const newExpire = Date.now() + SESSION_TIMEOUT;
-  localStorage.setItem("sessionExpire", newExpire);
+  localStorage.setItem("sessionExpire", Date.now() + SESSION_TIMEOUT);
 }
 
-// ==== CEK LOGIN DULU, BARU TAMPILKAN HALAMAN ====
-window.addEventListener("DOMContentLoaded", () => {
-  const body = document.body;
-  const loader = document.getElementById('loader');
+function startApp(){
+  document.getElementById("loader").remove();
+  const body=document.body;
+  body.style.display="flex";
+  setTimeout(()=>body.style.opacity="1",50);
+  resetSessionTimer();
+}
 
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
-  const expire = localStorage.getItem("sessionExpire");
+// ✅ Periksa login setelah semua resource siap (lebih stabil di HP)
+window.addEventListener("load", ()=>{
+  const isLoggedIn=localStorage.getItem("isLoggedIn");
+  const expire=localStorage.getItem("sessionExpire");
 
-  if(isLoggedIn==="true" && expire && Date.now() < expire){
-    // Login valid → tampilkan halaman
-    if(loader) loader.remove();
-    body.style.display = "flex";
-    setTimeout(()=>body.style.opacity="1",50);
-    resetSessionTimer();
-  } else {
-    // Belum login → arahkan ke login.html tanpa flicker
+  if(isLoggedIn==="true" && expire && Date.now()<expire){
+    startApp();
+  }else{
+    // jangan flicker: langsung ganti halaman tanpa render
     window.location.replace("login.html");
   }
 });
@@ -208,46 +183,28 @@ window.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("mousemove", resetSessionTimer);
 document.addEventListener("keydown", resetSessionTimer);
 
-// ==== SIDEBAR TOGGLE ====
+// SIDEBAR
 const sidebar=document.getElementById('sidebar');
 const overlay=document.getElementById('overlay');
 function toggleSidebar(){
-  const hidden=sidebar.classList.contains('hidden');
-  if(hidden){
-    sidebar.classList.remove('hidden');
-    sidebar.classList.add('show');
-    overlay.classList.add('show');
-  }else{
-    sidebar.classList.add('hidden');
-    sidebar.classList.remove('show');
-    overlay.classList.remove('show');
-  }
+  sidebar.classList.toggle('show');
+  overlay.classList.toggle('show');
 }
 overlay.addEventListener('click',()=>{
-  sidebar.classList.add('hidden');
   sidebar.classList.remove('show');
   overlay.classList.remove('show');
 });
 window.addEventListener('resize',()=>{
   if(window.innerWidth>768){
-    sidebar.classList.remove('hidden','show');
+    sidebar.classList.remove('show');
     overlay.classList.remove('show');
-  }else{
-    sidebar.classList.add('hidden');
   }
 });
-if(window.innerWidth>768){
-  sidebar.classList.remove('hidden');
-}
 
-// ==== MENU AKTIF OTOMATIS ====
-const currentPage = window.location.pathname.split('/').pop();
+// MENU AKTIF
+const currentPage=window.location.pathname.split('/').pop();
 document.querySelectorAll('.menu-link').forEach(link=>{
-  if(link.getAttribute('href') === currentPage){
-    link.classList.add('active');
-  } else {
-    link.classList.remove('active');
-  }
+  if(link.getAttribute('href')===currentPage){link.classList.add('active');}
 });
 </script>
 </body>
