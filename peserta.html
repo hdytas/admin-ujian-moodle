@@ -117,7 +117,7 @@
 <body>
 
 <!-- Sidebar -->
-<div class="sidebar hidden" id="sidebar">
+<div class="sidebar" id="sidebar">
   <div class="sidebar-header"><div class="logo">🎯 Admin Ujian</div></div>
   <ul class="sidebar-menu">
     <li><a href="#" class="menu-link active"><span>👥</span>Peserta</a></li>
@@ -228,15 +228,17 @@ window.addEventListener('resize',()=>{
     sidebar.classList.add('hidden');
   }
 });
+// Pastikan sidebar tampil di PC saat pertama dimuat
+if(window.innerWidth>768){
+  sidebar.classList.remove('hidden');
+}
 
 // ==== DROPDOWN MENU ADMIN ====
 const userMenu=document.getElementById('userMenu');
 const dropdown=document.getElementById('dropdownMenu');
-
 userMenu.addEventListener('click',()=>{
   dropdown.classList.toggle('show');
 });
-
 // Tutup dropdown saat klik di luar
 document.addEventListener('click',(e)=>{
   if(!userMenu.contains(e.target)){
