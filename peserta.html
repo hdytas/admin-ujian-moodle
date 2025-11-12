@@ -3,98 +3,207 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Peserta - CBT Admin</title>
+<title>Dashboard Peserta - Admin CBT</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#f6f8fa;min-height:100vh}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:#f6f8fa;color:#24292f;
+    display:flex;min-height:100vh;
+  }
+
+  /* SIDEBAR */
+  .sidebar{
+    position:fixed;left:0;top:0;height:100%;width:240px;
+    background:#2c3e50;color:#fff;overflow-y:auto;
+    transform:translateX(0);transition:transform .3s ease;
+    z-index:1000;
+  }
+  .sidebar.hidden{transform:translateX(-100%)}
+  .sidebar-header{padding:18px;text-align:center;border-bottom:1px solid #34495e}
+  .logo{font-size:18px;font-weight:600;color:#3498db}
+  .sidebar-menu{list-style:none}
+  .menu-link{display:flex;align-items:center;gap:10px;padding:12px 18px;text-decoration:none;color:#bdc3c7}
+  .menu-link:hover{background:#34495e;color:#fff}
+  .menu-link.active{background:#3498db;color:#fff}
+
+  /* OVERLAY */
+  .overlay{
+    display:none;
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,.4);z-index:999;
+  }
+  .overlay.show{display:block;}
+
+  /* MAIN */
+  .main{flex:1;margin-left:240px;display:flex;flex-direction:column;min-width:0}
   .topbar{
-    background:#fff;border-bottom:1px solid #ddd;
-    padding:12px 18px;display:flex;justify-content:space-between;align-items:center;
+    background:#fff;border-bottom:1px solid #d0d7de;
+    padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
     position:sticky;top:0;z-index:10;
   }
-  .topbar h2{font-size:18px;color:#24292f}
-  .logout-btn{
-    border:none;background:none;color:#0969da;font-weight:600;cursor:pointer;
+  .menu-toggle{display:none;font-size:22px;background:none;border:none;color:#24292f;cursor:pointer}
+  .user-info{display:flex;align-items:center;gap:10px}
+  .avatar{width:30px;height:30px;border-radius:50%;background:#0969da;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600}
+  .logout-btn{border:none;background:none;color:#0969da;font-weight:600;cursor:pointer;}
+
+  .content{flex:1;padding:16px;width:100%;max-width:1200px;margin:0 auto}
+  .page-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+  .btn{border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:6px;font-size:14px}
+  .btn-primary{background:#2da44e;color:#fff}
+  .btn-secondary{background:#f6f8fa;border:1px solid #d0d7de;color:#24292f}
+
+  /* GRID */
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+  .stat-card{background:#fff;border:1px solid #d0d7de;border-radius:6px;padding:16px;text-align:center}
+  .stat-number{font-size:22px;font-weight:600;color:#0969da}
+  .stat-label{font-size:13px;color:#57606a}
+
+  /* TABLE */
+  .table-container{background:#fff;border:1px solid #d0d7de;border-radius:6px;overflow:hidden}
+  .table-header{background:#f6f8fa;padding:10px 14px;border-bottom:1px solid #d0d7de;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
+  .search-box{padding:8px 10px;border:1px solid #d0d7de;border-radius:6px;width:220px;max-width:100%}
+  .table-wrapper{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14px;min-width:500px}
+  th,td{padding:8px 10px;border-bottom:1px solid #e1e4e8;text-align:left;white-space:nowrap}
+  tr:hover{background:#f6f8fa}
+  .badge{padding:3px 7px;border-radius:10px;font-size:12px;font-weight:500}
+  .badge-success{background:#dafbe1;color:#1a7f37}
+  .badge-warning{background:#fff8c5;color:#9a6700}
+
+  /* RESPONSIVE */
+  @media (max-width:768px){
+    body{flex-direction:column}
+    .main{margin-left:0}
+    .sidebar{transform:translateX(-100%)}
+    .sidebar.show{transform:translateX(0)}
+    .menu-toggle{display:block}
+    .page-header{flex-direction:column;align-items:stretch}
+    .btn{width:100%;justify-content:center}
+    table{font-size:13px;min-width:400px}
   }
-  .content{
-    max-width:800px;margin:40px auto;background:#fff;border:1px solid #ddd;
-    border-radius:8px;padding:20px;box-shadow:0 3px 10px rgba(0,0,0,.05);
-  }
-  h3{margin-bottom:10px;color:#24292f}
-  table{width:100%;border-collapse:collapse;margin-top:10px}
-  th,td{border-bottom:1px solid #eee;padding:8px;text-align:left}
-  th{background:#f6f8fa}
-  .stat{display:flex;justify-content:space-around;flex-wrap:wrap;margin-top:20px}
-  .card{
-    background:#fff;border:1px solid #ddd;border-radius:8px;
-    padding:16px;width:180px;margin:8px;text-align:center;
-  }
-  .card h4{margin-bottom:6px;color:#0969da}
-  .card span{font-size:14px;color:#555}
-  @media(max-width:600px){
-    .card{width:100%}
+  @media (max-width:480px){
+    .content{padding:10px}
+    .table-header{flex-direction:column;align-items:stretch}
+    .search-box{width:100%}
+    .btn{font-size:13px;padding:8px 10px}
+    .stat-card{padding:12px}
+    th,td{padding:6px 8px}
   }
 </style>
 </head>
 <body>
 
-<!-- Topbar -->
-<div class="topbar">
-  <h2>👥 Dashboard Peserta</h2>
-  <button class="logout-btn" onclick="logout()">Keluar</button>
+<!-- Sidebar -->
+<div class="sidebar hidden" id="sidebar">
+  <div class="sidebar-header"><div class="logo">🎯 Admin Ujian</div></div>
+  <ul class="sidebar-menu">
+    <li><a href="#" class="menu-link active"><span>👥</span>Peserta</a></li>
+    <li><a href="#" class="menu-link"><span>📝</span>Ujian</a></li>
+    <li><a href="#" class="menu-link"><span>📈</span>Laporan</a></li>
+  </ul>
 </div>
+<div class="overlay" id="overlay"></div>
 
-<!-- Content -->
-<div class="content">
-  <h3>Data Peserta CBT</h3>
-  <table>
-    <thead>
-      <tr><th>No</th><th>Username</th><th>Nama</th><th>Rombel</th><th>Sesi</th><th>Status</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>1</td><td>ahmad_2024</td><td>Ahmad Rizki</td><td>10A</td><td>1</td><td>Aktif</td></tr>
-      <tr><td>2</td><td>siti_2024</td><td>Siti Nurhaliza</td><td>10B</td><td>2</td><td>Aktif</td></tr>
-    </tbody>
-  </table>
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <strong>Dashboard Peserta</strong>
+    </div>
+    <div class="user-info">
+      <div class="avatar">A</div>
+      Admin
+      <button class="logout-btn" onclick="logout()">Keluar</button>
+    </div>
+  </div>
 
-  <div class="stat">
-    <div class="card"><h4>32</h4><span>Total Peserta</span></div>
-    <div class="card"><h4>5</h4><span>Total Rombel</span></div>
-    <div class="card"><h4>3</h4><span>Total Sesi</span></div>
+  <div class="content">
+    <div class="page-header">
+      <h2>👥 Daftar Peserta</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary">📥 Import</button>
+        <button class="btn btn-secondary">🔄 Sync</button>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-number">32</div><div class="stat-label">Total Peserta</div></div>
+      <div class="stat-card"><div class="stat-number">5</div><div class="stat-label">Rombel</div></div>
+      <div class="stat-card"><div class="stat-number">3</div><div class="stat-label">Sesi</div></div>
+    </div>
+
+    <div class="table-container">
+      <div class="table-header">
+        <h3>Daftar Peserta CBTAdmin</h3>
+        <input class="search-box" placeholder="Cari peserta...">
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>No</th><th>Username</th><th>Nama</th><th>Rombel</th><th>Sesi</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>ahmad_2024</td><td>Ahmad Rizki</td><td>10A</td><td>1</td><td><span class="badge badge-success">Aktif</span></td></tr>
+            <tr><td>2</td><td>siti_2024</td><td>Siti Nurhaliza</td><td>10B</td><td>2</td><td><span class="badge badge-warning">Pending</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
+// ==== LOGIN PROTECTION + TIMEOUT ====
 const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 menit
 
-// Fungsi cek login
 function checkLogin(){
   const isLoggedIn = localStorage.getItem("isLoggedIn");
-  const sessionExpire = localStorage.getItem("sessionExpire");
-  if(isLoggedIn!=="true" || !sessionExpire || Date.now()>sessionExpire){
+  const expire = localStorage.getItem("sessionExpire");
+  if(isLoggedIn!=="true" || !expire || Date.now()>expire){
     logout();
   }
 }
-
-// Logout function
 function logout(){
   localStorage.removeItem("isLoggedIn");
   localStorage.removeItem("sessionExpire");
   location.href="login.html";
 }
-
-// Perpanjang waktu sesi tiap aktivitas
 function resetSessionTimer(){
   const newExpire = Date.now() + SESSION_TIMEOUT;
   localStorage.setItem("sessionExpire", newExpire);
 }
-
-// Periksa login saat halaman dibuka
 checkLogin();
-
-// Pantau aktivitas pengguna
 document.addEventListener("mousemove", resetSessionTimer);
 document.addEventListener("keydown", resetSessionTimer);
+
+// ==== SIDEBAR ====
+const sidebar=document.getElementById('sidebar');
+const overlay=document.getElementById('overlay');
+function toggleSidebar(){
+  const hidden=sidebar.classList.contains('hidden');
+  if(hidden){
+    sidebar.classList.remove('hidden');
+    sidebar.classList.add('show');
+    overlay.classList.add('show');
+  }else{
+    sidebar.classList.add('hidden');
+    sidebar.classList.remove('show');
+    overlay.classList.remove('show');
+  }
+}
+overlay.addEventListener('click',()=>{
+  sidebar.classList.add('hidden');
+  sidebar.classList.remove('show');
+  overlay.classList.remove('show');
+});
+window.addEventListener('resize',()=>{
+  if(window.innerWidth>768){
+    sidebar.classList.remove('hidden','show');
+    overlay.classList.remove('show');
+  }else{
+    sidebar.classList.add('hidden');
+  }
+});
 </script>
 </body>
-</html>
+ </html>
