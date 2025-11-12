@@ -51,54 +51,14 @@
   h1{font-size:24px;margin-bottom:10px}
   .subtitle{color:#6a737d;margin-bottom:20px;font-size:14px}
 
-  /* Content */
+  /* Card utama */
   .card{
     background:#fff;border:1px solid #d0d7de;border-radius:10px;
     padding:20px;box-shadow:0 3px 10px rgba(0,0,0,.05);
-  }
-  .form-row{
-    display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;
-  }
-  select{
-    padding:10px;
-    border:1px solid #d0d7de;
-    border-radius:6px;
-    font-size:15px;
-  }
-  select:focus{
-    outline:none;
-    border-color:#3498db;
-    box-shadow:0 0 0 2px rgba(52,152,219,0.2);
-  }
-  button{
-    background:#3498db;color:#fff;
-    border:none;border-radius:6px;
-    padding:10px 14px;
-    font-weight:600;
-    cursor:pointer;
-  }
-  button:hover{background:#2d85c5}
-
-  /* Layout dua kolom */
-  .row{
-    display:grid;
-    grid-template-columns:2fr 1fr;
-    gap:20px;
+    max-width:600px;
   }
 
-  table{
-    width:100%;
-    border-collapse:collapse;
-    border:1px solid #d0d7de;
-    border-radius:8px;
-    overflow:hidden;
-    background:#fff;
-  }
-  th,td{padding:10px;border-bottom:1px solid #e1e4e8;text-align:left;font-size:14px}
-  th{background:#f6f8fa;font-weight:600}
-  tr:hover{background:#f0f6ff}
-
-  /* Token box */
+  /* Token */
   .token-box{
     background:#f0f6ff;
     border:1px solid #d0d7de;
@@ -110,7 +70,34 @@
     letter-spacing:4px;
     margin-bottom:15px;
   }
+  button{
+    background:#3498db;color:#fff;
+    border:none;border-radius:6px;
+    padding:10px 14px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  button:hover{background:#2d85c5}
+  select{
+    width:100%;
+    padding:10px;
+    border:1px solid #d0d7de;
+    border-radius:6px;
+    font-size:15px;
+    margin-bottom:15px;
+  }
+  select:focus{
+    outline:none;
+    border-color:#3498db;
+    box-shadow:0 0 0 2px rgba(52,152,219,0.2);
+  }
 
+  .button-group{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+  }
   .option-btn{
     background:#6a737d;
     color:#fff;
@@ -122,9 +109,6 @@
   }
   .option-btn:hover{background:#555}
 
-  @media(max-width:900px){
-    .row{grid-template-columns:1fr}
-  }
   @media(max-width:768px){
     .main{margin-left:0}
     .sidebar{transform:translateX(-100%)}
@@ -172,34 +156,23 @@
   </div>
 
   <div class="card">
-    <div class="form-row">
-      <select id="pilihTes">
-        <option value="">-- Pilih Tes --</option>
-        <option>Ujian Semester 1</option>
-        <option>Try Out Akhir</option>
-        <option>Ujian Praktek</option>
-      </select>
-      <button onclick="pilihMapel()">Pilih Mapel</button>
+    <!-- Token di atas -->
+    <div class="token-box" id="tokenDisplay">TOKEN123</div>
+    <div style="text-align:center;margin-bottom:20px">
+      <button onclick="releaseToken()">Release Token</button>
     </div>
 
-    <div class="row">
-      <!-- Kolom kiri: tabel mapel -->
-      <div>
-        <table>
-          <thead>
-            <tr><th>No</th><th>Mata Pelajaran</th><th>Status</th></tr>
-          </thead>
-          <tbody id="dataMapel">
-            <!-- diisi lewat JS -->
-          </tbody>
-        </table>
-      </div>
+    <!-- Pilihan Tes -->
+    <select id="pilihTes">
+      <option value="">-- Pilih Tes --</option>
+      <option>Ujian Semester 1</option>
+      <option>Try Out Akhir</option>
+      <option>Ujian Praktek</option>
+    </select>
 
-      <!-- Kolom kanan: token -->
-      <div>
-        <div class="token-box" id="tokenDisplay">TOKEN123</div>
-        <button style="width:100%" onclick="releaseToken()">Release Token</button>
-      </div>
+    <!-- Tombol Simpan -->
+    <div class="button-group">
+      <button style="flex:1" onclick="simpanTes()">💾 Simpan</button>
     </div>
   </div>
 </div>
@@ -217,7 +190,6 @@ window.addEventListener("load", ()=>{
     document.body.style.display="block";
     setTimeout(()=>document.body.style.opacity="1",100);
     localStorage.setItem("sessionExpire", Date.now()+SESSION_TIMEOUT);
-    tampilkanMapel();
   } else {
     document.getElementById("loader").innerHTML="⏳ Sesi login berakhir...<br>Mengarahkan ke halaman login.";
     setTimeout(()=>window.location.href="login.html",1000);
@@ -242,28 +214,6 @@ document.querySelectorAll('.menu-link').forEach(link=>{
   if(link.getAttribute('href')===currentPage){link.classList.add('active');}
 });
 
-// 🔢 Data mapel simulasi
-function tampilkanMapel(){
-  const mapel=[
-    {nama:"Matematika", status:"Siap"},
-    {nama:"Bahasa Indonesia", status:"Berjalan"},
-    {nama:"IPA", status:"Menunggu"},
-    {nama:"IPS", status:"Selesai"}
-  ];
-  const tbody=document.getElementById("dataMapel");
-  tbody.innerHTML=mapel.map((m,i)=>`
-    <tr>
-      <td>${i+1}</td>
-      <td>${m.nama}</td>
-      <td>${m.status}</td>
-    </tr>`).join("");
-}
-
-// Tombol "Pilih Mapel"
-function pilihMapel(){
-  alert("Menampilkan daftar mapel dari tes yang dipilih.");
-}
-
 // Tombol "Release Token"
 function releaseToken(){
   const tokenEl=document.getElementById("tokenDisplay");
@@ -272,9 +222,21 @@ function releaseToken(){
   alert("Token baru telah direlease: "+newToken);
 }
 
+// Tombol "Simpan Tes"
+function simpanTes(){
+  const selected=document.getElementById("pilihTes").value;
+  if(selected){
+    alert("Tes '"+selected+"' berhasil disimpan!");
+  } else {
+    alert("Silakan pilih tes terlebih dahulu.");
+  }
+}
+
 // Tombol "Option → Reset Default"
 function resetDefault(){
-  alert("Semua pengaturan Status Tes telah dikembalikan ke default.");
+  document.getElementById("tokenDisplay").textContent="TOKEN123";
+  document.getElementById("pilihTes").selectedIndex=0;
+  alert("Pengaturan Status Tes telah dikembalikan ke default.");
 }
 </script>
 </body>
