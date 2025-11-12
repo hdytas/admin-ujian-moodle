@@ -17,15 +17,26 @@
     position:fixed;left:0;top:0;height:100%;width:240px;
     background:#2c3e50;color:#fff;overflow-y:auto;
     transform:translateX(0);transition:transform .3s ease;
-    z-index:1000;
+    z-index:1000;display:flex;flex-direction:column;justify-content:space-between;
   }
   .sidebar.hidden{transform:translateX(-100%)}
   .sidebar-header{padding:18px;text-align:center;border-bottom:1px solid #34495e}
   .logo{font-size:18px;font-weight:600;color:#3498db}
-  .sidebar-menu{list-style:none}
+  .admin-box{padding:14px;text-align:center;border-bottom:1px solid #34495e}
+  .avatar{width:50px;height:50px;border-radius:50%;background:#3498db;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:20px;color:#fff}
+  .admin-name{font-weight:500;color:#ecf0f1}
+
+  .sidebar-menu{list-style:none;flex:1}
   .menu-link{display:flex;align-items:center;gap:10px;padding:12px 18px;text-decoration:none;color:#bdc3c7}
   .menu-link:hover{background:#34495e;color:#fff}
   .menu-link.active{background:#3498db;color:#fff}
+
+  .logout-btn{
+    display:block;width:100%;text-align:left;
+    padding:12px 18px;border:none;background:none;color:#e74c3c;font-weight:600;
+    cursor:pointer;font-size:14px;border-top:1px solid #34495e;
+  }
+  .logout-btn:hover{background:#c0392b;color:#fff}
 
   /* OVERLAY */
   .overlay{
@@ -43,31 +54,6 @@
     position:sticky;top:0;z-index:10;
   }
   .menu-toggle{display:none;font-size:22px;background:none;border:none;color:#24292f;cursor:pointer}
-  .user-info{position:relative;display:flex;align-items:center;gap:10px;cursor:pointer}
-  .avatar{width:30px;height:30px;border-radius:50%;background:#0969da;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600}
-
-  /* DROPDOWN MENU */
-  .dropdown{
-    position:absolute;
-    right:0;top:110%;
-    background:#fff;
-    border:1px solid #d0d7de;
-    border-radius:6px;
-    box-shadow:0 4px 10px rgba(0,0,0,.08);
-    display:none;
-    min-width:130px;
-  }
-  .dropdown.show{display:block;}
-  .dropdown a{
-    display:block;
-    padding:10px 14px;
-    text-decoration:none;
-    color:#24292f;
-    font-size:14px;
-  }
-  .dropdown a:hover{
-    background:#f6f8fa;
-  }
 
   .content{flex:1;padding:16px;width:100%;max-width:1200px;margin:0 auto}
   .page-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px}
@@ -111,13 +97,21 @@
 
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
-  <div class="sidebar-header"><div class="logo">🎯 Admin Ujian</div></div>
-  <ul class="sidebar-menu">
-    <li><a href="#" class="menu-link active"><span>👥</span>Peserta</a></li>
-    <li><a href="#" class="menu-link"><span>📝</span>Ujian</a></li>
-    <li><a href="#" class="menu-link"><span>📈</span>Laporan</a></li>
-  </ul>
+  <div>
+    <div class="sidebar-header"><div class="logo">🎯 Admin Ujian</div></div>
+    <div class="admin-box">
+      <div class="avatar">A</div>
+      <div class="admin-name">Admin</div>
+    </div>
+    <ul class="sidebar-menu">
+      <li><a href="#" class="menu-link active"><span>👥</span>Peserta</a></li>
+      <li><a href="#" class="menu-link"><span>📝</span>Ujian</a></li>
+      <li><a href="#" class="menu-link"><span>📈</span>Laporan</a></li>
+    </ul>
+  </div>
+  <button class="logout-btn" onclick="confirmLogout()">⏻ Keluar</button>
 </div>
+
 <div class="overlay" id="overlay"></div>
 
 <!-- Main -->
@@ -126,13 +120,6 @@
     <div style="display:flex;align-items:center;gap:10px">
       <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
       <strong>Dashboard Peserta</strong>
-    </div>
-    <div class="user-info" id="userMenu">
-      <div class="avatar">A</div>
-      <span>Admin ▾</span>
-      <div class="dropdown" id="dropdownMenu">
-        <a href="#" onclick="logout()">Keluar</a>
-      </div>
     </div>
   </div>
 
@@ -179,6 +166,11 @@ function logout(){
   localStorage.removeItem("sessionExpire");
   location.href="login.html";
 }
+function confirmLogout(){
+  if(confirm("Yakin ingin keluar dari akun admin?")){
+    logout();
+  }
+}
 function resetSessionTimer(){
   const newExpire = Date.now() + SESSION_TIMEOUT;
   localStorage.setItem("sessionExpire", newExpire);
@@ -215,23 +207,9 @@ window.addEventListener('resize',()=>{
     sidebar.classList.add('hidden');
   }
 });
-// Pastikan sidebar tampil di PC saat pertama dimuat
 if(window.innerWidth>768){
   sidebar.classList.remove('hidden');
 }
-
-// ==== DROPDOWN MENU ADMIN ====
-const userMenu=document.getElementById('userMenu');
-const dropdown=document.getElementById('dropdownMenu');
-userMenu.addEventListener('click',()=>{
-  dropdown.classList.toggle('show');
-});
-// Tutup dropdown saat klik di luar
-document.addEventListener('click',(e)=>{
-  if(!userMenu.contains(e.target)){
-    dropdown.classList.remove('show');
-  }
-});
 </script>
 </body>
 </html>
