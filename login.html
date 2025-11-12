@@ -3,125 +3,232 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login Admin - CBT</title>
+<title>Daftar Peserta - Admin CBT</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   body{
     font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    background:#f6f8fa;
-    display:flex;justify-content:center;align-items:center;
-    min-height:100vh;
+    background:#f6f8fa;color:#24292f;
+    display:flex;min-height:100vh;
   }
 
-  .login-box{
-    background:#fff;
-    border:1px solid #d0d7de;
-    border-radius:10px;
-    box-shadow:0 6px 20px rgba(0,0,0,.08);
-    padding:30px 28px;
-    width:100%;
-    max-width:360px;
-    text-align:center;
+  /* SIDEBAR */
+  .sidebar{
+    position:fixed;left:0;top:0;height:100%;width:240px;
+    background:#2c3e50;color:#fff;overflow-y:auto;
+    transform:translateX(0);transition:transform .3s ease;
+    z-index:1000;display:flex;flex-direction:column;justify-content:space-between;
   }
-  .logo{
-    font-size:22px;
-    font-weight:600;
-    color:#3498db;
-    margin-bottom:8px;
+  .sidebar.hidden{transform:translateX(-100%)}
+  .sidebar-header{padding:18px;text-align:center;border-bottom:1px solid #34495e}
+  .logo{font-size:18px;font-weight:600;color:#3498db}
+  .admin-box{padding:14px;text-align:center;border-bottom:1px solid #34495e}
+  .avatar{width:50px;height:50px;border-radius:50%;background:#3498db;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:20px;color:#fff}
+  .admin-name{font-weight:500;color:#ecf0f1}
+
+  .sidebar-menu{list-style:none;flex:1}
+  .menu-link{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 18px;text-decoration:none;color:#bdc3c7;
   }
-  .subtitle{
-    font-size:14px;
-    color:#6a737d;
-    margin-bottom:24px;
+  .menu-link:hover{background:#34495e;color:#fff}
+  .menu-link.active{background:#3498db;color:#fff}
+
+  .logout-btn{
+    display:block;width:100%;text-align:left;
+    padding:12px 18px;border:none;background:none;color:#e74c3c;font-weight:600;
+    cursor:pointer;font-size:14px;border-top:1px solid #34495e;
   }
-  input{
-    width:100%;
-    padding:10px 12px;
-    border:1px solid #d0d7de;
-    border-radius:6px;
-    margin-bottom:12px;
-    font-size:15px;
-  }
-  input:focus{
-    outline:none;
-    border-color:#3498db;
-    box-shadow:0 0 0 2px rgba(52,152,219,0.2);
-  }
-  button{
-    width:100%;
-    padding:10px;
-    background:#3498db;
-    color:#fff;
-    border:none;
-    border-radius:6px;
-    font-weight:600;
-    cursor:pointer;
-    font-size:15px;
-  }
-  button:hover{background:#2d85c5}
-  .error{
-    background:#fbeae5;
-    color:#b94a48;
-    padding:8px;
-    border-radius:6px;
-    font-size:13px;
-    margin-bottom:12px;
+  .logout-btn:hover{background:#c0392b;color:#fff}
+
+  /* OVERLAY */
+  .overlay{
     display:none;
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,.4);z-index:999;
   }
-  .footer{
-    margin-top:20px;
-    font-size:12px;
-    color:#6a737d;
-  }
+  .overlay.show{display:block;}
 
-  @media(max-width:480px){
-    .login-box{margin:0 16px;padding:24px}
-    .logo{font-size:20px}
+  /* MAIN */
+  .main{flex:1;margin-left:240px;display:flex;flex-direction:column;min-width:0}
+  .topbar{
+    background:#fff;border-bottom:1px solid #d0d7de;
+    padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;z-index:10;
+  }
+  .menu-toggle{display:none;font-size:22px;background:none;border:none;color:#24292f;cursor:pointer}
+
+  .content{flex:1;padding:16px;width:100%;max-width:1200px;margin:0 auto}
+  .page-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+  .btn{border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:6px;font-size:14px}
+  .btn-primary{background:#2da44e;color:#fff}
+  .btn-secondary{background:#f6f8fa;border:1px solid #d0d7de;color:#24292f}
+
+  /* TABLE */
+  .table-container{background:#fff;border:1px solid #d0d7de;border-radius:6px;overflow:hidden}
+  .table-header{background:#f6f8fa;padding:10px 14px;border-bottom:1px solid #d0d7de;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
+  .search-box{padding:8px 10px;border:1px solid #d0d7de;border-radius:6px;width:220px;max-width:100%}
+  .table-wrapper{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14px;min-width:500px}
+  th,td{padding:8px 10px;border-bottom:1px solid #e1e4e8;text-align:left;white-space:nowrap}
+  tr:hover{background:#f6f8fa}
+  .badge{padding:3px 7px;border-radius:10px;font-size:12px;font-weight:500}
+  .badge-success{background:#dafbe1;color:#1a7f37}
+  .badge-warning{background:#fff8c5;color:#9a6700}
+
+  /* RESPONSIVE */
+  @media (max-width:768px){
+    body{flex-direction:column}
+    .main{margin-left:0}
+    .sidebar{transform:translateX(-100%)}
+    .sidebar.show{transform:translateX(0)}
+    .menu-toggle{display:block}
+    .page-header{flex-direction:column;align-items:stretch}
+    .btn{width:100%;justify-content:center}
+    table{font-size:13px;min-width:400px}
+  }
+  @media (max-width:480px){
+    .content{padding:10px}
+    .table-header{flex-direction:column;align-items:stretch}
+    .search-box{width:100%}
+    .btn{font-size:13px;padding:8px 10px}
+    th,td{padding:6px 8px}
   }
 </style>
 </head>
 <body>
 
-<div class="login-box">
-  <div class="logo">🎯 Admin Ujian</div>
-  <div class="subtitle">Silakan masuk untuk mengelola peserta</div>
-  <div class="error" id="errorBox">Username atau password salah</div>
-  <form onsubmit="handleLogin(event)">
-    <input type="text" id="username" placeholder="Username" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <button type="submit">Masuk</button>
-  </form>
-  <div class="footer">© 2025 CBT Admin Panel</div>
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div>
+    <div class="sidebar-header"><div class="logo">🎯 Admin Ujian</div></div>
+    <div class="admin-box">
+      <div class="avatar">A</div>
+      <div class="admin-name">Admin</div>
+    </div>
+    <ul class="sidebar-menu">
+      <li><a href="dashboard.html" class="menu-link"><span>🏠</span>Dashboard</a></li>
+      <li><a href="peserta.html" class="menu-link"><span>👥</span>Daftar Peserta</a></li>
+      <li><a href="status-tes.html" class="menu-link"><span>🧭</span>Status Tes</a></li>
+      <li><a href="status-peserta.html" class="menu-link"><span>🧑‍🎓</span>Status Peserta</a></li>
+      <li><a href="reset-login.html" class="menu-link"><span>🔁</span>Reset Login Peserta</a></li>
+      <li><a href="broexam.html" class="menu-link"><span>💻</span>BroExam APP</a></li>
+      <li><a href="dokumen.html" class="menu-link"><span>📂</span>Dokumen</a></li>
+      <li><a href="hasil-ujian.html" class="menu-link"><span>🧾</span>Hasil Ujian</a></li>
+      <li><a href="tools.html" class="menu-link"><span>⚙️</span>Tools / Setting</a></li>
+    </ul>
+  </div>
+  <button class="logout-btn" onclick="confirmLogout()">⏻ Keluar</button>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <strong>Daftar Peserta</strong>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <h2>👥 Daftar Peserta</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary">📥 Import</button>
+        <button class="btn btn-secondary">🔄 Sync</button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <div class="table-header">
+        <h3>Daftar Peserta CBTAdmin</h3>
+        <input class="search-box" placeholder="Cari peserta...">
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>No</th><th>Username</th><th>Nama</th><th>Rombel</th><th>Sesi</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>ahmad_2024</td><td>Ahmad Rizki</td><td>10A</td><td>1</td><td><span class="badge badge-success">Aktif</span></td></tr>
+            <tr><td>2</td><td>siti_2024</td><td>Siti Nurhaliza</td><td>10B</td><td>2</td><td><span class="badge badge-warning">Pending</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
+// ==== LOGIN PROTECTION + TIMEOUT ====
 const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 menit
 
-// Jika sudah login dan sesi masih berlaku → langsung ke dashboard
-const isLoggedIn = localStorage.getItem("isLoggedIn");
-const expire = localStorage.getItem("sessionExpire");
-if(isLoggedIn==="true" && expire && Date.now() < expire){
-  location.href = "peserta.html";
-}
-
-function handleLogin(e){
-  e.preventDefault();
-  const user = document.getElementById('username').value.trim();
-  const pass = document.getElementById('password').value.trim();
-  const errorBox = document.getElementById('errorBox');
-
-  // Ganti kredensial di sini sesuai kebutuhan
-  const validUser = "admin";
-  const validPass = "12345";
-
-  if(user===validUser && pass===validPass){
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("sessionExpire", Date.now() + SESSION_TIMEOUT);
-    location.href = "peserta.html";
-  } else {
-    errorBox.style.display = "block";
+function checkLogin(){
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  const expire = localStorage.getItem("sessionExpire");
+  if(isLoggedIn!=="true" || !expire || Date.now()>expire){
+    logout();
   }
 }
+function logout(){
+  localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("sessionExpire");
+  location.href="login.html";
+}
+function confirmLogout(){
+  if(confirm("Yakin ingin keluar dari akun admin?")){
+    logout();
+  }
+}
+function resetSessionTimer(){
+  const newExpire = Date.now() + SESSION_TIMEOUT;
+  localStorage.setItem("sessionExpire", newExpire);
+}
+checkLogin();
+document.addEventListener("mousemove", resetSessionTimer);
+document.addEventListener("keydown", resetSessionTimer);
+
+// ==== SIDEBAR TOGGLE ====
+const sidebar=document.getElementById('sidebar');
+const overlay=document.getElementById('overlay');
+function toggleSidebar(){
+  const hidden=sidebar.classList.contains('hidden');
+  if(hidden){
+    sidebar.classList.remove('hidden');
+    sidebar.classList.add('show');
+    overlay.classList.add('show');
+  }else{
+    sidebar.classList.add('hidden');
+    sidebar.classList.remove('show');
+    overlay.classList.remove('show');
+  }
+}
+overlay.addEventListener('click',()=>{
+  sidebar.classList.add('hidden');
+  sidebar.classList.remove('show');
+  overlay.classList.remove('show');
+});
+window.addEventListener('resize',()=>{
+  if(window.innerWidth>768){
+    sidebar.classList.remove('hidden','show');
+    overlay.classList.remove('show');
+  }else{
+    sidebar.classList.add('hidden');
+  }
+});
+if(window.innerWidth>768){
+  sidebar.classList.remove('hidden');
+}
+
+// ==== MENU AKTIF OTOMATIS ====
+const currentPage = window.location.pathname.split('/').pop();
+document.querySelectorAll('.menu-link').forEach(link=>{
+  if(link.getAttribute('href') === currentPage){
+    link.classList.add('active');
+  } else {
+    link.classList.remove('active');
+  }
+});
 </script>
 </body>
 </html>
