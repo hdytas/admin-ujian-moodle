@@ -55,36 +55,35 @@
   .card{
     background:#fff;border:1px solid #d0d7de;border-radius:10px;
     padding:20px;box-shadow:0 3px 10px rgba(0,0,0,.05);
-    max-width:600px;
+    max-width:750px;
   }
 
-  /* Token */
+  .row{
+    display:grid;
+    grid-template-columns:160px 1fr auto;
+    align-items:center;
+    gap:10px;
+    margin-bottom:15px;
+  }
+  label{font-weight:600;color:#444}
+
   .token-box{
     background:#f0f6ff;
     border:1px solid #d0d7de;
-    border-radius:8px;
-    padding:20px;
+    border-radius:6px;
+    padding:10px;
     text-align:center;
-    font-size:24px;
+    font-size:20px;
     font-weight:600;
-    letter-spacing:4px;
-    margin-bottom:15px;
+    letter-spacing:3px;
   }
-  button{
-    background:#3498db;color:#fff;
-    border:none;border-radius:6px;
-    padding:10px 14px;
-    font-weight:600;
-    cursor:pointer;
-  }
-  button:hover{background:#2d85c5}
+
   select{
     width:100%;
     padding:10px;
     border:1px solid #d0d7de;
     border-radius:6px;
     font-size:15px;
-    margin-bottom:15px;
   }
   select:focus{
     outline:none;
@@ -92,12 +91,15 @@
     box-shadow:0 0 0 2px rgba(52,152,219,0.2);
   }
 
-  .button-group{
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
-    flex-wrap:wrap;
+  button{
+    background:#3498db;color:#fff;
+    border:none;border-radius:6px;
+    padding:10px 16px;
+    font-weight:600;
+    cursor:pointer;
   }
+  button:hover{background:#2d85c5}
+
   .option-btn{
     background:#6a737d;
     color:#fff;
@@ -109,11 +111,20 @@
   }
   .option-btn:hover{background:#555}
 
+  .save-btn{
+    margin-top:20px;
+    width:100%;
+    padding:12px;
+    font-size:15px;
+  }
+
   @media(max-width:768px){
     .main{margin-left:0}
     .sidebar{transform:translateX(-100%)}
     .sidebar.show{transform:translateX(0)}
     .menu-toggle{display:block}
+    .row{grid-template-columns:1fr 1fr;grid-template-rows:auto auto}
+    .row label{grid-column:1 / -1}
   }
 </style>
 </head>
@@ -156,24 +167,27 @@
   </div>
 
   <div class="card">
-    <!-- Token di atas -->
-    <div class="token-box" id="tokenDisplay">TOKEN123</div>
-    <div style="text-align:center;margin-bottom:20px">
-      <button onclick="releaseToken()">Release Token</button>
+    <!-- Baris 1: Token -->
+    <div class="row">
+      <label>Token</label>
+      <div class="token-box" id="tokenDisplay">TOKEN123</div>
+      <button onclick="releaseToken()">Release</button>
     </div>
 
-    <!-- Pilihan Tes -->
-    <select id="pilihTes">
-      <option value="">-- Pilih Tes --</option>
-      <option>Ujian Semester 1</option>
-      <option>Try Out Akhir</option>
-      <option>Ujian Praktek</option>
-    </select>
+    <!-- Baris 2: Daftar Tes -->
+    <div class="row">
+      <label>Daftar Tes</label>
+      <select id="pilihTes">
+        <option value="">-- Pilih Tes --</option>
+        <option>Ujian Semester 1</option>
+        <option>Try Out Akhir</option>
+        <option>Ujian Praktek</option>
+      </select>
+      <button onclick="pilihTes()">Pilih Tes</button>
+    </div>
 
     <!-- Tombol Simpan -->
-    <div class="button-group">
-      <button style="flex:1" onclick="simpanTes()">💾 Simpan</button>
-    </div>
+    <button class="save-btn" onclick="simpanTes()">💾 Simpan</button>
   </div>
 </div>
 
@@ -214,29 +228,37 @@ document.querySelectorAll('.menu-link').forEach(link=>{
   if(link.getAttribute('href')===currentPage){link.classList.add('active');}
 });
 
-// Tombol "Release Token"
+// Fungsi tombol
 function releaseToken(){
   const tokenEl=document.getElementById("tokenDisplay");
   const newToken=Math.random().toString(36).substr(2,6).toUpperCase();
   tokenEl.textContent=newToken;
-  alert("Token baru telah direlease: "+newToken);
+  alert("Token baru direlease: "+newToken);
 }
 
-// Tombol "Simpan Tes"
-function simpanTes(){
+function pilihTes(){
   const selected=document.getElementById("pilihTes").value;
   if(selected){
-    alert("Tes '"+selected+"' berhasil disimpan!");
-  } else {
+    alert("Tes '"+selected+"' dipilih.");
+  }else{
     alert("Silakan pilih tes terlebih dahulu.");
   }
 }
 
-// Tombol "Option → Reset Default"
+function simpanTes(){
+  const selected=document.getElementById("pilihTes").value;
+  if(selected){
+    localStorage.setItem("tesDipilih", selected);
+    alert("Tes '"+selected+"' berhasil disimpan!");
+  }else{
+    alert("Silakan pilih tes terlebih dahulu.");
+  }
+}
+
 function resetDefault(){
   document.getElementById("tokenDisplay").textContent="TOKEN123";
   document.getElementById("pilihTes").selectedIndex=0;
-  alert("Pengaturan Status Tes telah dikembalikan ke default.");
+  alert("Status Tes dikembalikan ke default.");
 }
 </script>
 </body>
