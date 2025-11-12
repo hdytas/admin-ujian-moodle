@@ -43,9 +43,31 @@
     position:sticky;top:0;z-index:10;
   }
   .menu-toggle{display:none;font-size:22px;background:none;border:none;color:#24292f;cursor:pointer}
-  .user-info{display:flex;align-items:center;gap:10px}
+  .user-info{position:relative;display:flex;align-items:center;gap:10px;cursor:pointer}
   .avatar{width:30px;height:30px;border-radius:50%;background:#0969da;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600}
-  .logout-btn{border:none;background:none;color:#0969da;font-weight:600;cursor:pointer;}
+
+  /* DROPDOWN MENU */
+  .dropdown{
+    position:absolute;
+    right:0;top:110%;
+    background:#fff;
+    border:1px solid #d0d7de;
+    border-radius:6px;
+    box-shadow:0 4px 10px rgba(0,0,0,.08);
+    display:none;
+    min-width:130px;
+  }
+  .dropdown.show{display:block;}
+  .dropdown a{
+    display:block;
+    padding:10px 14px;
+    text-decoration:none;
+    color:#24292f;
+    font-size:14px;
+  }
+  .dropdown a:hover{
+    background:#f6f8fa;
+  }
 
   .content{flex:1;padding:16px;width:100%;max-width:1200px;margin:0 auto}
   .page-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px}
@@ -112,10 +134,12 @@
       <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
       <strong>Dashboard Peserta</strong>
     </div>
-    <div class="user-info">
+    <div class="user-info" id="userMenu">
       <div class="avatar">A</div>
-      Admin
-      <button class="logout-btn" onclick="logout()">Keluar</button>
+      <span>Admin ▾</span>
+      <div class="dropdown" id="dropdownMenu">
+        <a href="#" onclick="logout()">Keluar</a>
+      </div>
     </div>
   </div>
 
@@ -202,6 +226,21 @@ window.addEventListener('resize',()=>{
     overlay.classList.remove('show');
   }else{
     sidebar.classList.add('hidden');
+  }
+});
+
+// ==== DROPDOWN MENU ADMIN ====
+const userMenu=document.getElementById('userMenu');
+const dropdown=document.getElementById('dropdownMenu');
+
+userMenu.addEventListener('click',()=>{
+  dropdown.classList.toggle('show');
+});
+
+// Tutup dropdown saat klik di luar
+document.addEventListener('click',(e)=>{
+  if(!userMenu.contains(e.target)){
+    dropdown.classList.remove('show');
   }
 });
 </script>
