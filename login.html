@@ -93,15 +93,16 @@
 <script>
 const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 menit
 
-// Jika sudah login dan sesi masih aktif → langsung ke peserta.html
+// ✅ Jika sudah login & sesi masih aktif → langsung ke Dashboard
 window.addEventListener("load", ()=>{
   const isLoggedIn = localStorage.getItem("isLoggedIn");
   const expire = localStorage.getItem("sessionExpire");
   if(isLoggedIn==="true" && expire && Date.now()<expire){
-    window.location.href = "peserta.html";
+    window.location.href = "dashboard.html";
   }
 });
 
+// ✅ Fungsi login
 function handleLogin(e){
   e.preventDefault();
   const user = document.getElementById('username').value.trim();
@@ -115,8 +116,8 @@ function handleLogin(e){
   if(user===validUser && pass===validPass){
     localStorage.setItem("isLoggedIn", "true");
     localStorage.setItem("sessionExpire", Date.now() + SESSION_TIMEOUT);
-    // beri jeda agar localStorage tersimpan sempurna
-    setTimeout(()=>{ window.location.href = "peserta.html"; }, 200);
+    // arahkan ke dashboard (tanpa flicker)
+    setTimeout(()=>{ window.location.href = "dashboard.html"; }, 200);
   }else{
     errorBox.style.display = "block";
   }
