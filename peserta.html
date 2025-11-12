@@ -9,7 +9,8 @@
   body{
     font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     background:#f6f8fa;color:#24292f;
-    display:flex;min-height:100vh;
+    display:none; /* disembunyikan dulu sampai login dicek */
+    min-height:100vh;
     opacity:0;
     transition:opacity .3s ease;
   }
@@ -98,7 +99,12 @@
   }
 </style>
 </head>
-<body onload="document.body.style.opacity='1'">
+<body>
+
+<!-- Loader (tampil sebelum login diverifikasi) -->
+<div id="loader" style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;">
+  <div>🔄 Memeriksa sesi login...</div>
+</div>
 
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
@@ -162,16 +168,8 @@
 </div>
 
 <script>
-// ==== LOGIN PROTECTION + TIMEOUT ====
 const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 menit
 
-function checkLogin(){
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
-  const expire = localStorage.getItem("sessionExpire");
-  if(isLoggedIn!=="true" || !expire || Date.now()>expire){
-    logout();
-  }
-}
 function logout(){
   localStorage.removeItem("isLoggedIn");
   localStorage.removeItem("sessionExpire");
@@ -187,9 +185,24 @@ function resetSessionTimer(){
   localStorage.setItem("sessionExpire", newExpire);
 }
 
-// Jalankan login check setelah halaman selesai tampil
+// ==== CEK LOGIN DULU, BARU TAMPILKAN HALAMAN ====
 window.addEventListener("DOMContentLoaded", () => {
-  setTimeout(checkLogin, 200);
+  const body = document.body;
+  const loader = document.getElementById('loader');
+
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  const expire = localStorage.getItem("sessionExpire");
+
+  if(isLoggedIn==="true" && expire && Date.now() < expire){
+    // Login valid → tampilkan halaman
+    if(loader) loader.remove();
+    body.style.display = "flex";
+    setTimeout(()=>body.style.opacity="1",50);
+    resetSessionTimer();
+  } else {
+    // Belum login → arahkan ke login.html tanpa flicker
+    window.location.replace("login.html");
+  }
 });
 
 document.addEventListener("mousemove", resetSessionTimer);
