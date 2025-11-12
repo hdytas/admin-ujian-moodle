@@ -10,7 +10,7 @@
   body{
     font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     background:#f6f8fa;color:#24292f;
-    display:none; /* disembunyikan dulu sampai login valid */
+    display:none;
     min-height:100vh;opacity:0;transition:opacity .3s ease;
   }
 
@@ -58,15 +58,36 @@
   h1{font-size:24px;margin-bottom:10px}
   .subtitle{color:#6a737d;margin-bottom:20px;font-size:14px}
 
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px}
-  .card{
+  /* STATISTICS */
+  .stats-container{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;margin-bottom:24px;
+  }
+  .stat-card{
     background:#fff;border:1px solid #d0d7de;border-radius:10px;
     padding:18px;box-shadow:0 3px 10px rgba(0,0,0,.05);
+    text-align:center;
   }
-  .card h3{font-size:16px;color:#6a737d;margin-bottom:8px}
-  .card .value{font-size:26px;font-weight:600;color:#24292f}
-  .chart{background:#fff;border:1px solid #d0d7de;border-radius:10px;padding:20px;text-align:center}
-  .chart canvas{max-width:100%}
+  .stat-card h3{font-size:16px;color:#6a737d;margin-bottom:6px}
+  .stat-card .value{font-size:28px;font-weight:600;color:#24292f}
+
+  /* CHART SECTION */
+  .chart-section{
+    background:#fff;border:1px solid #d0d7de;border-radius:10px;
+    padding:20px;margin-bottom:24px;
+  }
+  .chart-section h3{font-size:16px;margin-bottom:12px}
+  canvas{max-width:100%}
+
+  /* STATUS SERVER */
+  .status-box{
+    background:#fff;border:1px solid #d0d7de;border-radius:10px;
+    padding:18px;text-align:center;
+  }
+  .status-indicator{
+    font-size:18px;font-weight:600;color:#1a7f37;
+  }
 
   @media (max-width:768px){
     body{flex-direction:column}
@@ -115,32 +136,41 @@
       <strong>Dashboard</strong>
     </div>
   </div>
+
   <div class="content">
     <h1>Selamat Datang, Admin 👋</h1>
-    <div class="subtitle">Ringkasan aktivitas sistem ujian hari ini</div>
+    <div class="subtitle">Ringkasan aktivitas ujian hari ini</div>
 
-    <div class="cards">
-      <div class="card">
+    <!-- Statistik Utama -->
+    <div class="stats-container">
+      <div class="stat-card">
         <h3>Total Peserta</h3>
         <div class="value" id="totalPeserta">0</div>
       </div>
-      <div class="card">
-        <h3>Ujian Aktif</h3>
-        <div class="value" id="ujianAktif">0</div>
+      <div class="stat-card">
+        <h3>Ruang / Kelas</h3>
+        <div class="value" id="totalRuang">0</div>
       </div>
-      <div class="card">
-        <h3>Peserta Online</h3>
-        <div class="value" id="pesertaOnline">0</div>
+      <div class="stat-card">
+        <h3>Aktif (Online)</h3>
+        <div class="value" id="pesertaAktif">0</div>
       </div>
-      <div class="card">
-        <h3>Status Server</h3>
-        <div class="value" style="color:#1a7f37;">🟢 Normal</div>
+      <div class="stat-card">
+        <h3>Belum Submit</h3>
+        <div class="value" id="belumSubmit">0</div>
       </div>
     </div>
 
-    <div class="chart">
+    <!-- Grafik -->
+    <div class="chart-section">
       <h3>Grafik Aktivitas Peserta</h3>
-      <canvas id="chartAktivitas" height="120"></canvas>
+      <canvas id="chartAktivitas" height="100"></canvas>
+    </div>
+
+    <!-- Status Server -->
+    <div class="status-box">
+      <h3>Status Server</h3>
+      <div class="status-indicator" id="serverStatus">🟢 Normal</div>
     </div>
   </div>
 </div>
@@ -155,7 +185,7 @@ function logout(){
   window.location.href="login.html";
 }
 
-// Cek login setelah halaman siap
+// Cek login dan tampilkan dashboard
 window.addEventListener("load", ()=>{
   const isLoggedIn = localStorage.getItem("isLoggedIn");
   const expire = localStorage.getItem("sessionExpire");
@@ -172,6 +202,9 @@ window.addEventListener("load", ()=>{
   }
 });
 
+// Sidebar toggle
+const sidebar=document.getElementById('sidebar');
+const overlay=document.getElementById('overlay');
 function toggleSidebar(){
   sidebar.classList.toggle('show');
   overlay.classList.toggle('show');
@@ -186,21 +219,23 @@ window.addEventListener('resize',()=>{
     overlay.classList.remove('show');
   }
 });
-const sidebar=document.getElementById('sidebar');
-const overlay=document.getElementById('overlay');
+
+// Menu aktif
 const currentPage=window.location.pathname.split('/').pop();
 document.querySelectorAll('.menu-link').forEach(link=>{
   if(link.getAttribute('href')===currentPage){link.classList.add('active');}
 });
 
-// Data dummy dashboard
+// Muat data dashboard (dummy untuk sementara)
 function loadDashboard(){
   document.getElementById("totalPeserta").innerText = "250";
-  document.getElementById("ujianAktif").innerText = "5";
-  document.getElementById("pesertaOnline").innerText = "83";
+  document.getElementById("totalRuang").innerText   = "8";
+  document.getElementById("pesertaAktif").innerText = "162";
+  document.getElementById("belumSubmit").innerText  = "43";
   renderChart();
 }
 
+// Render grafik aktivitas
 function renderChart(){
   const ctx = document.getElementById('chartAktivitas').getContext('2d');
   new Chart(ctx, {
