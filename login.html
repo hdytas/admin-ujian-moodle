@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Admin - CBT</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:#f6f8fa;
+    display:flex;justify-content:center;align-items:center;
+    min-height:100vh;
+  }
+  .login-box{
+    background:#fff;
+    border:1px solid #d0d7de;
+    border-radius:10px;
+    box-shadow:0 6px 20px rgba(0,0,0,.08);
+    padding:30px;
+    width:100%;
+    max-width:360px;
+    text-align:center;
+  }
+  .logo{
+    font-size:22px;
+    font-weight:600;
+    color:#3498db;
+    margin-bottom:8px;
+  }
+  .subtitle{
+    font-size:14px;
+    color:#6a737d;
+    margin-bottom:20px;
+  }
+  input{
+    width:100%;
+    padding:10px;
+    border:1px solid #d0d7de;
+    border-radius:6px;
+    margin-bottom:12px;
+    font-size:15px;
+  }
+  input:focus{
+    outline:none;
+    border-color:#3498db;
+    box-shadow:0 0 0 2px rgba(52,152,219,0.2);
+  }
+  button{
+    width:100%;
+    padding:10px;
+    background:#3498db;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    font-weight:600;
+    cursor:pointer;
+    font-size:15px;
+  }
+  button:hover{background:#2d85c5}
+  .error{
+    display:none;
+    background:#fdecea;
+    color:#b94a48;
+    padding:8px;
+    border-radius:6px;
+    font-size:13px;
+    margin-bottom:12px;
+  }
+  .footer{
+    margin-top:20px;
+    font-size:12px;
+    color:#6a737d;
+  }
+</style>
+</head>
+<body>
+
+<div class="login-box">
+  <div class="logo">🎯 Admin Ujian</div>
+  <div class="subtitle">Silakan masuk untuk mengelola peserta</div>
+  <div id="errorBox" class="error">Username atau password salah</div>
+
+  <form onsubmit="handleLogin(event)">
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Masuk</button>
+  </form>
+
+  <div class="footer">© 2025 CBT Admin Panel</div>
+</div>
+
+<script>
+const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 menit
+
+// Jika sudah login dan sesi masih aktif → langsung ke peserta.html
+window.addEventListener("load", ()=>{
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  const expire = localStorage.getItem("sessionExpire");
+  if(isLoggedIn==="true" && expire && Date.now()<expire){
+    window.location.href = "peserta.html";
+  }
+});
+
+function handleLogin(e){
+  e.preventDefault();
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value.trim();
+  const errorBox = document.getElementById('errorBox');
+
+  // Ganti username & password sesuai kebutuhan
+  const validUser = "admin";
+  const validPass = "12345";
+
+  if(user===validUser && pass===validPass){
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("sessionExpire", Date.now() + SESSION_TIMEOUT);
+    // beri jeda agar localStorage tersimpan sempurna
+    setTimeout(()=>{ window.location.href = "peserta.html"; }, 200);
+  }else{
+    errorBox.style.display = "block";
+  }
+}
+</script>
+</body>
+</html>
