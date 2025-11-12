@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Admin - CBT</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:#f6f8fa;display:flex;justify-content:center;align-items:center;
+    height:100vh;
+  }
+  .login-box{
+    background:#fff;border:1px solid #ddd;border-radius:8px;
+    width:100%;max-width:360px;padding:28px;box-shadow:0 3px 10px rgba(0,0,0,.08);
+  }
+  h2{text-align:center;margin-bottom:24px;color:#24292f}
+  label{display:block;margin-bottom:6px;font-weight:500;color:#444}
+  input{
+    width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;margin-bottom:14px;
+    font-size:14px;
+  }
+  .btn{
+    width:100%;padding:10px;border:none;border-radius:6px;background:#2da44e;
+    color:white;font-weight:600;font-size:15px;cursor:pointer;
+  }
+  .btn:hover{background:#2c974b}
+  .error{color:#d33;margin-bottom:10px;text-align:center;font-size:13px}
+  .footer{text-align:center;margin-top:20px;font-size:13px;color:#777}
+</style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>🔐 Login Admin</h2>
+    <div id="error" class="error"></div>
+    <label>Username</label>
+    <input type="text" id="username" placeholder="admin">
+    <label>Password</label>
+    <input type="password" id="password" placeholder="••••••••">
+    <button class="btn" onclick="login()">Masuk</button>
+    <div class="footer">© 2025 MTsN 7 Aceh Tengah</div>
+  </div>
+
+<script>
+const ADMIN_USER = "admin";
+const ADMIN_PASS = "12345";
+const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 menit
+
+function login(){
+  const u=document.getElementById('username').value.trim();
+  const p=document.getElementById('password').value.trim();
+  const err=document.getElementById('error');
+
+  if(u===ADMIN_USER && p===ADMIN_PASS){
+    const sessionExpire = Date.now() + SESSION_TIMEOUT;
+    localStorage.setItem("isLoggedIn","true");
+    localStorage.setItem("sessionExpire", sessionExpire);
+    location.href="peserta.html";
+  }else{
+    err.textContent="❌ Username atau password salah";
+  }
+}
+
+// Jika sudah login & session belum habis → langsung ke dashboard
+const sessionExpire = localStorage.getItem("sessionExpire");
+if(localStorage.getItem("isLoggedIn")==="true" && sessionExpire && Date.now()<sessionExpire){
+  location.href="peserta.html";
+}else{
+  localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("sessionExpire");
+}
+</script>
+</body>
+</html>
