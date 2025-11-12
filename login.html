@@ -8,67 +8,119 @@
   *{margin:0;padding:0;box-sizing:border-box}
   body{
     font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    background:#f6f8fa;display:flex;justify-content:center;align-items:center;
-    height:100vh;
+    background:#f6f8fa;
+    display:flex;justify-content:center;align-items:center;
+    min-height:100vh;
   }
+
   .login-box{
-    background:#fff;border:1px solid #ddd;border-radius:8px;
-    width:100%;max-width:360px;padding:28px;box-shadow:0 3px 10px rgba(0,0,0,.08);
+    background:#fff;
+    border:1px solid #d0d7de;
+    border-radius:10px;
+    box-shadow:0 6px 20px rgba(0,0,0,.08);
+    padding:30px 28px;
+    width:100%;
+    max-width:360px;
+    text-align:center;
   }
-  h2{text-align:center;margin-bottom:24px;color:#24292f}
-  label{display:block;margin-bottom:6px;font-weight:500;color:#444}
-  input{
-    width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;margin-bottom:14px;
+  .logo{
+    font-size:22px;
+    font-weight:600;
+    color:#3498db;
+    margin-bottom:8px;
+  }
+  .subtitle{
     font-size:14px;
+    color:#6a737d;
+    margin-bottom:24px;
   }
-  .btn{
-    width:100%;padding:10px;border:none;border-radius:6px;background:#2da44e;
-    color:white;font-weight:600;font-size:15px;cursor:pointer;
+  input{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid #d0d7de;
+    border-radius:6px;
+    margin-bottom:12px;
+    font-size:15px;
   }
-  .btn:hover{background:#2c974b}
-  .error{color:#d33;margin-bottom:10px;text-align:center;font-size:13px}
-  .footer{text-align:center;margin-top:20px;font-size:13px;color:#777}
+  input:focus{
+    outline:none;
+    border-color:#3498db;
+    box-shadow:0 0 0 2px rgba(52,152,219,0.2);
+  }
+  button{
+    width:100%;
+    padding:10px;
+    background:#3498db;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    font-weight:600;
+    cursor:pointer;
+    font-size:15px;
+  }
+  button:hover{background:#2d85c5}
+  .error{
+    background:#fbeae5;
+    color:#b94a48;
+    padding:8px;
+    border-radius:6px;
+    font-size:13px;
+    margin-bottom:12px;
+    display:none;
+  }
+  .footer{
+    margin-top:20px;
+    font-size:12px;
+    color:#6a737d;
+  }
+
+  @media(max-width:480px){
+    .login-box{margin:0 16px;padding:24px}
+    .logo{font-size:20px}
+  }
 </style>
 </head>
 <body>
-  <div class="login-box">
-    <h2>🔐 Login Admin</h2>
-    <div id="error" class="error"></div>
-    <label>Username</label>
-    <input type="text" id="username" placeholder="admin">
-    <label>Password</label>
-    <input type="password" id="password" placeholder="••••••••">
-    <button class="btn" onclick="login()">Masuk</button>
-    <div class="footer">© 2025 MTsN 7 Aceh Tengah</div>
-  </div>
+
+<div class="login-box">
+  <div class="logo">🎯 Admin Ujian</div>
+  <div class="subtitle">Silakan masuk untuk mengelola peserta</div>
+  <div class="error" id="errorBox">Username atau password salah</div>
+  <form onsubmit="handleLogin(event)">
+    <input type="text" id="username" placeholder="Username" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Masuk</button>
+  </form>
+  <div class="footer">© 2025 CBT Admin Panel</div>
+</div>
 
 <script>
-const ADMIN_USER = "admin";
-const ADMIN_PASS = "12345";
 const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 menit
 
-function login(){
-  const u=document.getElementById('username').value.trim();
-  const p=document.getElementById('password').value.trim();
-  const err=document.getElementById('error');
-
-  if(u===ADMIN_USER && p===ADMIN_PASS){
-    const sessionExpire = Date.now() + SESSION_TIMEOUT;
-    localStorage.setItem("isLoggedIn","true");
-    localStorage.setItem("sessionExpire", sessionExpire);
-    location.href="peserta.html";
-  }else{
-    err.textContent="❌ Username atau password salah";
-  }
+// Jika sudah login dan sesi masih berlaku → langsung ke dashboard
+const isLoggedIn = localStorage.getItem("isLoggedIn");
+const expire = localStorage.getItem("sessionExpire");
+if(isLoggedIn==="true" && expire && Date.now() < expire){
+  location.href = "peserta.html";
 }
 
-// Jika sudah login & session belum habis → langsung ke dashboard
-const sessionExpire = localStorage.getItem("sessionExpire");
-if(localStorage.getItem("isLoggedIn")==="true" && sessionExpire && Date.now()<sessionExpire){
-  location.href="peserta.html";
-}else{
-  localStorage.removeItem("isLoggedIn");
-  localStorage.removeItem("sessionExpire");
+function handleLogin(e){
+  e.preventDefault();
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value.trim();
+  const errorBox = document.getElementById('errorBox');
+
+  // Ganti kredensial di sini sesuai kebutuhan
+  const validUser = "admin";
+  const validPass = "12345";
+
+  if(user===validUser && pass===validPass){
+    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("sessionExpire", Date.now() + SESSION_TIMEOUT);
+    location.href = "peserta.html";
+  } else {
+    errorBox.style.display = "block";
+  }
 }
 </script>
 </body>
