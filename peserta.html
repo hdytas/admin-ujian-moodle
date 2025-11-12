@@ -1,275 +1,182 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Daftar Peserta - Admin Moodle</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f6f8fa;
-      color: #24292f;
-      line-height: 1.5;
-      display: flex;
-      min-height: 100vh;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daftar Peserta - Admin Moodle</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:#f6f8fa;color:#24292f;
+    display:flex;min-height:100vh;
+  }
 
-    /* Sidebar */
-    .sidebar {
-      width: 250px;
-      background: #2c3e50;
-      color: white;
-      position: fixed;
-      height: 100vh;
-      overflow-y: auto;
-      transition: transform 0.3s ease;
-      z-index: 1000;
-    }
-    .sidebar-header {
-      padding: 20px;
-      border-bottom: 1px solid #34495e;
-      text-align: center;
-    }
-    .logo { font-size: 20px; font-weight: 600; color: #3498db; }
-    .sidebar-menu { list-style: none; }
-    .menu-link {
-      display: flex;
-      align-items: center;
-      padding: 14px 20px;
-      color: #bdc3c7;
-      text-decoration: none;
-      transition: 0.3s;
-      gap: 10px;
-    }
-    .menu-link:hover { background: #34495e; color: #fff; }
-    .menu-link.active { background: #3498db; color: #fff; }
+  /* SIDEBAR */
+  .sidebar{
+    position:fixed;left:0;top:0;height:100%;width:240px;
+    background:#2c3e50;color:#fff;overflow-y:auto;
+    transform:translateX(0);transition:transform .3s;
+    z-index:1000;
+  }
+  .sidebar.hide{transform:translateX(-100%)}
+  .sidebar-header{padding:18px;text-align:center;border-bottom:1px solid #34495e}
+  .logo{font-size:18px;font-weight:600;color:#3498db}
+  .sidebar-menu{list-style:none}
+  .menu-link{display:flex;align-items:center;gap:10px;padding:12px 18px;text-decoration:none;color:#bdc3c7}
+  .menu-link:hover{background:#34495e;color:#fff}
+  .menu-link.active{background:#3498db;color:#fff}
 
-    /* Main */
-    .main-content {
-      flex: 1;
-      margin-left: 250px;
-      display: flex;
-      flex-direction: column;
-    }
-    .top-header {
-      background: white;
-      border-bottom: 1px solid #d0d7de;
-      padding: 16px 24px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .user-info {
-      display: flex; align-items: center; gap: 12px;
-    }
-    .user-avatar {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: #0969da; color: white;
-      display: flex; align-items: center; justify-content: center; font-weight: 600;
-    }
+  /* MAIN */
+  .main{flex:1;margin-left:240px;display:flex;flex-direction:column;min-width:0}
+  .topbar{
+    background:#fff;border-bottom:1px solid #d0d7de;
+    padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;z-index:10;
+  }
+  .menu-toggle{display:none;font-size:22px;background:none;border:none;color:#24292f;cursor:pointer}
+  .user-info{display:flex;align-items:center;gap:10px}
+  .avatar{width:30px;height:30px;border-radius:50%;background:#0969da;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600}
 
-    .container {
-      flex: 1; padding: 24px; max-width: 1200px; margin: 0 auto;
-    }
+  .content{flex:1;padding:16px;width:100%;max-width:1200px;margin:0 auto}
+  .page-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+  .btn{border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:6px;font-size:14px}
+  .btn-primary{background:#2da44e;color:#fff}
+  .btn-secondary{background:#f6f8fa;border:1px solid #d0d7de;color:#24292f}
 
-    .page-header {
-      display: flex; justify-content: space-between; align-items: center;
-      flex-wrap: wrap; gap: 12px; margin-bottom: 24px;
-    }
+  /* GRID */
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+  .stat-card{background:#fff;border:1px solid #d0d7de;border-radius:6px;padding:16px;text-align:center}
+  .stat-number{font-size:22px;font-weight:600;color:#0969da}
+  .stat-label{font-size:13px;color:#57606a}
 
-    .btn {
-      padding: 10px 16px; border: none; border-radius: 6px;
-      cursor: pointer; font-weight: 500;
-      display: inline-flex; align-items: center; gap: 8px;
-    }
-    .btn-primary { background: #2da44e; color: white; }
-    .btn-secondary {
-      background: #f6f8fa; color: #24292f; border: 1px solid #d0d7de;
-    }
+  /* TABLE */
+  .table-container{background:#fff;border:1px solid #d0d7de;border-radius:6px;overflow:hidden}
+  .table-header{background:#f6f8fa;padding:10px 14px;border-bottom:1px solid #d0d7de;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
+  .search-box{padding:8px 10px;border:1px solid #d0d7de;border-radius:6px;width:220px;max-width:100%}
+  .table-wrapper{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14px;min-width:500px}
+  th,td{padding:8px 10px;border-bottom:1px solid #e1e4e8;text-align:left;white-space:nowrap}
+  tr:hover{background:#f6f8fa}
+  .badge{padding:3px 7px;border-radius:10px;font-size:12px;font-weight:500}
+  .badge-success{background:#dafbe1;color:#1a7f37}
+  .badge-warning{background:#fff8c5;color:#9a6700}
 
-    /* Table */
-    .table-container {
-      background: white; border: 1px solid #d0d7de; border-radius: 6px; overflow: hidden;
-    }
-    .table-header {
-      display: flex; justify-content: space-between; align-items: center;
-      flex-wrap: wrap; padding: 12px 16px; background: #f6f8fa; border-bottom: 1px solid #d0d7de;
-    }
-    .search-box {
-      padding: 8px 12px; border: 1px solid #d0d7de; border-radius: 6px;
-      width: 250px; max-width: 100%;
-    }
-    .table-wrapper { overflow-x: auto; }
-    .table { width: 100%; border-collapse: collapse; min-width: 700px; }
-    .table th, .table td {
-      padding: 10px 14px; border-bottom: 1px solid #d0d7de; text-align: left; white-space: nowrap;
-    }
-    .table tr:hover { background: #f6f8fa; }
+  /* MODAL */
+  .modal{
+    display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,.4);z-index:2000;justify-content:center;align-items:center;padding:16px;
+  }
+  .modal-content{
+    background:#fff;border-radius:8px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;
+  }
+  .modal-header{padding:12px 16px;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center}
+  .modal-body{padding:16px}
 
-    .badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; }
-    .badge-success { background: #dafbe1; color: #1a7f37; }
-    .badge-warning { background: #fff8c5; color: #9a6700; }
-
-    /* Stats */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .stat-card {
-      background: white;
-      border: 1px solid #d0d7de;
-      border-radius: 6px;
-      padding: 20px;
-      text-align: center;
-    }
-    .stat-number { font-size: 24px; font-weight: 600; color: #0969da; }
-    .stat-label { font-size: 14px; color: #57606a; }
-
-    /* Modal */
-    .modal {
-      display: none; position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 2000;
-      justify-content: center; align-items: center;
-      padding: 20px;
-    }
-    .modal-content {
-      background: white;
-      border-radius: 8px;
-      width: 100%;
-      max-width: 600px;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    .modal-header, .modal-body { padding: 16px 20px; }
-
-    /* Toggle */
-    .menu-toggle {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 22px;
-      cursor: pointer;
-      margin-right: 10px;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      body { flex-direction: column; }
-      .sidebar {
-        transform: translateX(-100%);
-        width: 220px;
-      }
-      .sidebar.active { transform: translateX(0); }
-      .main-content { margin-left: 0; }
-      .menu-toggle { display: block; color: #24292f; }
-      .page-header { flex-direction: column; align-items: stretch; }
-      .btn { width: 100%; justify-content: center; }
-      .table { font-size: 13px; }
-      .stats-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-      .modal-content { max-width: 95%; height: auto; }
-    }
-  </style>
+  /* RESPONSIVE */
+  @media (max-width:992px){
+    .main{margin-left:200px}
+  }
+  @media (max-width:768px){
+    body{flex-direction:column}
+    .sidebar{transform:translateX(-100%)}
+    .sidebar.hide{transform:translateX(0)}
+    .main{margin-left:0}
+    .menu-toggle{display:block}
+    .page-header{flex-direction:column;align-items:stretch}
+    .btn{width:100%;justify-content:center}
+    table{font-size:13px;min-width:400px}
+  }
+  @media (max-width:480px){
+    .content{padding:10px}
+    .table-header{flex-direction:column;align-items:stretch}
+    .search-box{width:100%}
+    .btn{font-size:13px;padding:8px 10px}
+    .stat-card{padding:12px}
+    th,td{padding:6px 8px}
+  }
+</style>
 </head>
-
 <body>
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-header"><div class="logo">🎯 Admin Ujian</div></div>
-    <ul class="sidebar-menu">
-      <li><a href="home.html" class="menu-link"><span>🏠</span> Home</a></li>
-      <li><a href="exams.html" class="menu-link"><span>📝</span> Ujian</a></li>
-      <li><a href="peserta.html" class="menu-link active"><span>👥</span> Peserta</a></li>
-      <li><a href="#" class="menu-link"><span>👁️</span> Monitoring</a></li>
-      <li><a href="#" class="menu-link"><span>📈</span> Laporan</a></li>
-      <li><a href="#" class="menu-link"><span>⚙️</span> Pengaturan</a></li>
-    </ul>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="logo">🎯 Admin Ujian</div></div>
+  <ul class="sidebar-menu">
+    <li><a href="#" class="menu-link"><span>🏠</span>Home</a></li>
+    <li><a href="#" class="menu-link"><span>📝</span>Ujian</a></li>
+    <li><a href="#" class="menu-link active"><span>👥</span>Peserta</a></li>
+    <li><a href="#" class="menu-link"><span>📈</span>Laporan</a></li>
+  </ul>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <strong>Daftar Peserta</strong>
+    </div>
+    <div class="user-info"><div class="avatar">A</div>Admin</div>
   </div>
 
-  <!-- Main Content -->
-  <div class="main-content">
-    <div class="top-header">
-      <div style="display:flex; align-items:center; justify-content:space-between;">
-        <div style="display:flex; align-items:center;">
-          <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-          <h2 style="font-size:18px;">Daftar Peserta</h2>
-        </div>
-        <div class="user-info"><div class="user-avatar">A</div><span>Admin</span></div>
+  <div class="content">
+    <div class="page-header">
+      <h2>👥 Daftar Peserta</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="showModal()">📥 Import</button>
+        <button class="btn btn-secondary">🔄 Sync</button>
       </div>
     </div>
 
-    <div class="container">
-      <div class="page-header">
-        <h1 class="page-title">👥 Daftar Peserta</h1>
-        <div class="action-buttons">
-          <button class="btn btn-primary" onclick="showImportModal()">📥 Import Peserta</button>
-          <button class="btn btn-secondary" onclick="syncMoodle()">🔄 Sync Moodle</button>
-        </div>
-      </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-number">32</div><div class="stat-label">Total Peserta</div></div>
+      <div class="stat-card"><div class="stat-number">5</div><div class="stat-label">Rombel</div></div>
+      <div class="stat-card"><div class="stat-number">3</div><div class="stat-label">Sesi</div></div>
+    </div>
 
-      <!-- Statistik -->
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-number" id="totalCbtAdmin">0</div><div class="stat-label">Total CBTAdmin</div></div>
-        <div class="stat-card"><div class="stat-number" id="totalMoodle">0</div><div class="stat-label">Total Moodle</div></div>
-        <div class="stat-card"><div class="stat-number" id="totalRombel">0</div><div class="stat-label">Total Rombel</div></div>
-        <div class="stat-card"><div class="stat-number" id="totalSesi">0</div><div class="stat-label">Total Sesi</div></div>
+    <div class="table-container">
+      <div class="table-header">
+        <h3>Daftar Peserta CBTAdmin</h3>
+        <input class="search-box" placeholder="Cari peserta...">
       </div>
-
-      <!-- Tabel -->
-      <div class="table-container">
-        <div class="table-header">
-          <h3 class="table-title">Daftar Peserta CBTAdmin</h3>
-          <input type="text" class="search-box" placeholder="Cari peserta...">
-        </div>
-        <div class="table-wrapper">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>No</th><th>Username</th><th>Nama</th><th>Rombel</th><th>Ruang</th><th>Sesi</th><th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody><tr><td colspan="7" style="text-align:center;color:#57606a;">(Data akan dimuat di sini)</td></tr></tbody>
-          </table>
-        </div>
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>No</th><th>Username</th><th>Nama</th><th>Rombel</th><th>Sesi</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>ahmad_2024</td><td>Ahmad Rizki</td><td>10A</td><td>1</td><td><span class="badge badge-success">Aktif</span></td></tr>
+            <tr><td>2</td><td>siti_2024</td><td>Siti Nurhaliza</td><td>10B</td><td>2</td><td><span class="badge badge-warning">Pending</span></td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Modal -->
-  <div class="modal" id="importModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>📥 Import Peserta</h3>
-        <button style="border:none;background:none;font-size:20px;cursor:pointer;" onclick="closeModal()">×</button>
-      </div>
-      <div class="modal-body">
-        <p>Isi form atau upload file peserta di sini.</p>
-        <div style="margin-top:20px;text-align:right;">
-          <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
-          <button class="btn btn-primary">Lanjut</button>
-        </div>
+<!-- Modal -->
+<div class="modal" id="importModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>📥 Import Peserta</h3>
+      <button style="background:none;border:none;font-size:20px;cursor:pointer" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <p>Fitur import akan datang...</p>
+      <div style="text-align:right;margin-top:20px">
+        <button class="btn btn-secondary" onclick="closeModal()">Tutup</button>
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('active');
-    }
-    function showImportModal() {
-      document.getElementById('importModal').style.display = 'flex';
-    }
-    function closeModal() {
-      document.getElementById('importModal').style.display = 'none';
-    }
-    window.onclick = e => {
-      const modal = document.getElementById('importModal');
-      if (e.target === modal) closeModal();
-    };
-  </script>
+<script>
+  function toggleSidebar(){
+    const s=document.getElementById('sidebar');
+    s.classList.toggle('hide');
+  }
+  function showModal(){document.getElementById('importModal').style.display='flex'}
+  function closeModal(){document.getElementById('importModal').style.display='none'}
+  window.onclick=e=>{if(e.target.id==='importModal')closeModal()}
+</script>
 </body>
   </html>
