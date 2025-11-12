@@ -10,6 +10,8 @@
     font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     background:#f6f8fa;color:#24292f;
     display:flex;min-height:100vh;
+    opacity:0;
+    transition:opacity .3s ease;
   }
 
   /* SIDEBAR */
@@ -96,7 +98,7 @@
   }
 </style>
 </head>
-<body>
+<body onload="document.body.style.opacity='1'">
 
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
@@ -184,7 +186,12 @@ function resetSessionTimer(){
   const newExpire = Date.now() + SESSION_TIMEOUT;
   localStorage.setItem("sessionExpire", newExpire);
 }
-checkLogin();
+
+// Jalankan login check setelah halaman selesai tampil
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(checkLogin, 200);
+});
+
 document.addEventListener("mousemove", resetSessionTimer);
 document.addEventListener("keydown", resetSessionTimer);
 
