@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Peserta - Admin CBT</title>
+<title>Daftar Peserta - Admin CBT</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   body{
@@ -27,7 +27,10 @@
   .admin-name{font-weight:500;color:#ecf0f1}
 
   .sidebar-menu{list-style:none;flex:1}
-  .menu-link{display:flex;align-items:center;gap:10px;padding:12px 18px;text-decoration:none;color:#bdc3c7}
+  .menu-link{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 18px;text-decoration:none;color:#bdc3c7;
+  }
   .menu-link:hover{background:#34495e;color:#fff}
   .menu-link.active{background:#3498db;color:#fff}
 
@@ -104,9 +107,15 @@
       <div class="admin-name">Admin</div>
     </div>
     <ul class="sidebar-menu">
-      <li><a href="#" class="menu-link active"><span>👥</span>Peserta</a></li>
-      <li><a href="#" class="menu-link"><span>📝</span>Ujian</a></li>
-      <li><a href="#" class="menu-link"><span>📈</span>Laporan</a></li>
+      <li><a href="dashboard.html" class="menu-link"><span>🏠</span>Dashboard</a></li>
+      <li><a href="peserta.html" class="menu-link"><span>👥</span>Daftar Peserta</a></li>
+      <li><a href="status-tes.html" class="menu-link"><span>🧭</span>Status Tes</a></li>
+      <li><a href="status-peserta.html" class="menu-link"><span>🧑‍🎓</span>Status Peserta</a></li>
+      <li><a href="reset-login.html" class="menu-link"><span>🔁</span>Reset Login Peserta</a></li>
+      <li><a href="broexam.html" class="menu-link"><span>💻</span>BroExam APP</a></li>
+      <li><a href="dokumen.html" class="menu-link"><span>📂</span>Dokumen</a></li>
+      <li><a href="hasil-ujian.html" class="menu-link"><span>🧾</span>Hasil Ujian</a></li>
+      <li><a href="tools.html" class="menu-link"><span>⚙️</span>Tools / Setting</a></li>
     </ul>
   </div>
   <button class="logout-btn" onclick="confirmLogout()">⏻ Keluar</button>
@@ -119,7 +128,7 @@
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:10px">
       <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-      <strong>Dashboard Peserta</strong>
+      <strong>Daftar Peserta</strong>
     </div>
   </div>
 
@@ -179,7 +188,7 @@ checkLogin();
 document.addEventListener("mousemove", resetSessionTimer);
 document.addEventListener("keydown", resetSessionTimer);
 
-// ==== SIDEBAR ====
+// ==== SIDEBAR TOGGLE ====
 const sidebar=document.getElementById('sidebar');
 const overlay=document.getElementById('overlay');
 function toggleSidebar(){
@@ -210,6 +219,16 @@ window.addEventListener('resize',()=>{
 if(window.innerWidth>768){
   sidebar.classList.remove('hidden');
 }
+
+// ==== MENU AKTIF OTOMATIS ====
+const currentPage = window.location.pathname.split('/').pop();
+document.querySelectorAll('.menu-link').forEach(link=>{
+  if(link.getAttribute('href') === currentPage){
+    link.classList.add('active');
+  } else {
+    link.classList.remove('active');
+  }
+});
 </script>
 </body>
 </html>
