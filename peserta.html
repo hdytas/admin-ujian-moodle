@@ -16,16 +16,24 @@
   .sidebar{
     position:fixed;left:0;top:0;height:100%;width:240px;
     background:#2c3e50;color:#fff;overflow-y:auto;
-    transform:translateX(0);transition:transform .3s;
+    transform:translateX(0);transition:transform .3s ease;
     z-index:1000;
   }
-  .sidebar.hide{transform:translateX(-100%)}
+  .sidebar.hidden{transform:translateX(-100%)}
   .sidebar-header{padding:18px;text-align:center;border-bottom:1px solid #34495e}
   .logo{font-size:18px;font-weight:600;color:#3498db}
   .sidebar-menu{list-style:none}
   .menu-link{display:flex;align-items:center;gap:10px;padding:12px 18px;text-decoration:none;color:#bdc3c7}
   .menu-link:hover{background:#34495e;color:#fff}
   .menu-link.active{background:#3498db;color:#fff}
+
+  /* OVERLAY untuk mode mobile */
+  .overlay{
+    display:none;
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,.4);z-index:999;
+  }
+  .overlay.show{display:block;}
 
   /* MAIN */
   .main{flex:1;margin-left:240px;display:flex;flex-direction:column;min-width:0}
@@ -74,14 +82,11 @@
   .modal-body{padding:16px}
 
   /* RESPONSIVE */
-  @media (max-width:992px){
-    .main{margin-left:200px}
-  }
   @media (max-width:768px){
     body{flex-direction:column}
-    .sidebar{transform:translateX(-100%)}
-    .sidebar.hide{transform:translateX(0)}
     .main{margin-left:0}
+    .sidebar{transform:translateX(-100%)}
+    .sidebar.show{transform:translateX(0)}
     .menu-toggle{display:block}
     .page-header{flex-direction:column;align-items:stretch}
     .btn{width:100%;justify-content:center}
@@ -100,7 +105,7 @@
 <body>
 
 <!-- Sidebar -->
-<div class="sidebar" id="sidebar">
+<div class="sidebar hidden" id="sidebar">
   <div class="sidebar-header"><div class="logo">🎯 Admin Ujian</div></div>
   <ul class="sidebar-menu">
     <li><a href="#" class="menu-link"><span>🏠</span>Home</a></li>
@@ -109,6 +114,7 @@
     <li><a href="#" class="menu-link"><span>📈</span>Laporan</a></li>
   </ul>
 </div>
+<div class="overlay" id="overlay"></div>
 
 <!-- Main -->
 <div class="main">
@@ -170,13 +176,41 @@
 </div>
 
 <script>
+  const sidebar=document.getElementById('sidebar');
+  const overlay=document.getElementById('overlay');
+
   function toggleSidebar(){
-    const s=document.getElementById('sidebar');
-    s.classList.toggle('hide');
+    const isHidden=sidebar.classList.contains('hidden');
+    if(isHidden){
+      sidebar.classList.remove('hidden');
+      sidebar.classList.add('show');
+      overlay.classList.add('show');
+    }else{
+      sidebar.classList.add('hidden');
+      sidebar.classList.remove('show');
+      overlay.classList.remove('show');
+    }
   }
+
+  overlay.addEventListener('click',()=>{
+    sidebar.classList.add('hidden');
+    sidebar.classList.remove('show');
+    overlay.classList.remove('show');
+  });
+
+  // Tutup sidebar otomatis saat ukuran layar diperbesar kembali
+  window.addEventListener('resize',()=>{
+    if(window.innerWidth>768){
+      sidebar.classList.remove('hidden','show');
+      overlay.classList.remove('show');
+    }else{
+      sidebar.classList.add('hidden');
+    }
+  });
+
   function showModal(){document.getElementById('importModal').style.display='flex'}
   function closeModal(){document.getElementById('importModal').style.display='none'}
   window.onclick=e=>{if(e.target.id==='importModal')closeModal()}
 </script>
 </body>
-  </html>
+                                              </html>
