@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Admin CBT</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:#f6f8fa;color:#24292f;
+    display:none; /* disembunyikan dulu sampai login valid */
+    min-height:100vh;opacity:0;transition:opacity .3s ease;
+  }
+
+  /* SIDEBAR */
+  .sidebar{
+    position:fixed;left:0;top:0;height:100%;width:240px;
+    background:#2c3e50;color:#fff;overflow-y:auto;
+    transition:transform .3s ease;
+    z-index:1000;display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .sidebar.hidden{transform:translateX(-100%)}
+  .sidebar-header{padding:18px;text-align:center;border-bottom:1px solid #34495e}
+  .logo{font-size:18px;font-weight:600;color:#3498db}
+  .admin-box{padding:14px;text-align:center;border-bottom:1px solid #34495e}
+  .avatar{width:50px;height:50px;border-radius:50%;background:#3498db;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:20px;color:#fff}
+  .admin-name{font-weight:500;color:#ecf0f1}
+
+  .sidebar-menu{list-style:none;flex:1}
+  .menu-link{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 18px;text-decoration:none;color:#bdc3c7;
+  }
+  .menu-link:hover{background:#34495e;color:#fff}
+  .menu-link.active{background:#3498db;color:#fff}
+
+  .logout-btn{
+    display:block;width:100%;text-align:left;
+    padding:12px 18px;border:none;background:none;color:#e74c3c;font-weight:600;
+    cursor:pointer;font-size:14px;border-top:1px solid #34495e;
+  }
+  .logout-btn:hover{background:#c0392b;color:#fff}
+
+  .overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);z-index:999;}
+  .overlay.show{display:block;}
+
+  /* MAIN */
+  .main{flex:1;margin-left:240px;display:flex;flex-direction:column;min-width:0}
+  .topbar{
+    background:#fff;border-bottom:1px solid #d0d7de;
+    padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;z-index:10;
+  }
+  .menu-toggle{display:none;font-size:22px;background:none;border:none;color:#24292f;cursor:pointer}
+  .content{flex:1;padding:20px;width:100%;max-width:1200px;margin:0 auto}
+  h1{font-size:24px;margin-bottom:10px}
+  .subtitle{color:#6a737d;margin-bottom:20px;font-size:14px}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px}
+  .card{
+    background:#fff;border:1px solid #d0d7de;border-radius:10px;
+    padding:18px;box-shadow:0 3px 10px rgba(0,0,0,.05);
+  }
+  .card h3{font-size:16px;color:#6a737d;margin-bottom:8px}
+  .card .value{font-size:26px;font-weight:600;color:#24292f}
+  .chart{background:#fff;border:1px solid #d0d7de;border-radius:10px;padding:20px;text-align:center}
+  .chart canvas{max-width:100%}
+
+  @media (max-width:768px){
+    body{flex-direction:column}
+    .main{margin-left:0}
+    .sidebar{transform:translateX(-100%)}
+    .sidebar.show{transform:translateX(0)}
+    .menu-toggle{display:block}
+  }
+</style>
+</head>
+<body>
+<div id="loader" style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;">
+  🔄 Memeriksa sesi login...
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div>
+    <div class="sidebar-header"><div class="logo">🎯 Admin Ujian</div></div>
+    <div class="admin-box">
+      <div class="avatar">A</div>
+      <div class="admin-name">Admin</div>
+    </div>
+    <ul class="sidebar-menu">
+      <li><a href="dashboard.html" class="menu-link"><span>🏠</span>Dashboard</a></li>
+      <li><a href="peserta.html" class="menu-link"><span>👥</span>Daftar Peserta</a></li>
+      <li><a href="status-tes.html" class="menu-link"><span>🧭</span>Status Tes</a></li>
+      <li><a href="status-peserta.html" class="menu-link"><span>🧑‍🎓</span>Status Peserta</a></li>
+      <li><a href="reset-login.html" class="menu-link"><span>🔁</span>Reset Login Peserta</a></li>
+      <li><a href="broexam.html" class="menu-link"><span>💻</span>BroExam APP</a></li>
+      <li><a href="dokumen.html" class="menu-link"><span>📂</span>Dokumen</a></li>
+      <li><a href="hasil-ujian.html" class="menu-link"><span>🧾</span>Hasil Ujian</a></li>
+      <li><a href="tools.html" class="menu-link"><span>⚙️</span>Tools / Setting</a></li>
+    </ul>
+  </div>
+  <button class="logout-btn" onclick="logout()">⏻ Keluar</button>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <strong>Dashboard</strong>
+    </div>
+  </div>
+  <div class="content">
+    <h1>Selamat Datang, Admin 👋</h1>
+    <div class="subtitle">Ringkasan aktivitas sistem ujian hari ini</div>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Total Peserta</h3>
+        <div class="value" id="totalPeserta">0</div>
+      </div>
+      <div class="card">
+        <h3>Ujian Aktif</h3>
+        <div class="value" id="ujianAktif">0</div>
+      </div>
+      <div class="card">
+        <h3>Peserta Online</h3>
+        <div class="value" id="pesertaOnline">0</div>
+      </div>
+      <div class="card">
+        <h3>Status Server</h3>
+        <div class="value" style="color:#1a7f37;">🟢 Normal</div>
+      </div>
+    </div>
+
+    <div class="chart">
+      <h3>Grafik Aktivitas Peserta</h3>
+      <canvas id="chartAktivitas" height="120"></canvas>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const SESSION_TIMEOUT = 15 * 60 * 1000;
+
+function logout(){
+  localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("sessionExpire");
+  window.location.href="login.html";
+}
+
+// Cek login setelah halaman siap
+window.addEventListener("load", ()=>{
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  const expire = localStorage.getItem("sessionExpire");
+
+  if(isLoggedIn==="true" && expire && Date.now()<expire){
+    document.getElementById("loader").remove();
+    document.body.style.display="flex";
+    setTimeout(()=>document.body.style.opacity="1",100);
+    localStorage.setItem("sessionExpire", Date.now()+SESSION_TIMEOUT);
+    loadDashboard();
+  } else {
+    document.getElementById("loader").innerHTML="⏳ Sesi login berakhir...<br>Mengarahkan ke halaman login.";
+    setTimeout(()=>window.location.href="login.html",1000);
+  }
+});
+
+function toggleSidebar(){
+  sidebar.classList.toggle('show');
+  overlay.classList.toggle('show');
+}
+overlay.addEventListener('click',()=>{
+  sidebar.classList.remove('show');
+  overlay.classList.remove('show');
+});
+window.addEventListener('resize',()=>{
+  if(window.innerWidth>768){
+    sidebar.classList.remove('show');
+    overlay.classList.remove('show');
+  }
+});
+const sidebar=document.getElementById('sidebar');
+const overlay=document.getElementById('overlay');
+const currentPage=window.location.pathname.split('/').pop();
+document.querySelectorAll('.menu-link').forEach(link=>{
+  if(link.getAttribute('href')===currentPage){link.classList.add('active');}
+});
+
+// Data dummy dashboard
+function loadDashboard(){
+  document.getElementById("totalPeserta").innerText = "250";
+  document.getElementById("ujianAktif").innerText = "5";
+  document.getElementById("pesertaOnline").innerText = "83";
+  renderChart();
+}
+
+function renderChart(){
+  const ctx = document.getElementById('chartAktivitas').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+      datasets: [{
+        label: 'Peserta Aktif',
+        data: [120, 135, 150, 180, 170, 90, 110],
+        fill: false,
+        borderColor: '#3498db',
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false }},
+      scales: { y: { beginAtZero: true }}
+    }
+  });
+}
+</script>
+</body>
+</html>
